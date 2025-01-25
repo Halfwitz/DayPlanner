@@ -81,17 +81,17 @@ public class Contact {
     protected String verifyNonNullWithinChars(String str, int minCharNum, int maxCharNum) {
         // CHECK EDGE CASES
         if (str == null) {
-            throw new IllegalArgumentException("Invalid string, must be non-null value.");
+            throw new IllegalArgumentException("Invalid input, must be non-null value.");
         }
         // no leading/trailing whitespace
         String trueStr = str.strip();
         // if str and str.strip() lengths are different, contains invalid leading/trailing characters
         if (str.length() != str.strip().length()) { // (strip() removes leading/trailing whitespace
-            throw new IllegalArgumentException("Invalid string, be sure to remove leading or trailing spaces.");
+            throw new IllegalArgumentException("Invalid input, be sure to remove leading or trailing spaces.");
         }
         // if str has too little or too many characters, throw exception
         if (trueStr.length() > maxCharNum || trueStr.length() < minCharNum) {
-            throw new IllegalArgumentException("Invalid string, " + str + ", must be within" + minCharNum + "-" + maxCharNum + " characters.");
+            throw new IllegalArgumentException("Invalid input, " + str + ", must be within " + minCharNum + "-" + maxCharNum + " characters.");
         }
         // Return data if no exceptions thrown
         return str;
