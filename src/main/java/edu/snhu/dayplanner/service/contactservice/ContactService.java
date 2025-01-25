@@ -44,11 +44,13 @@ public class ContactService {
      * @param lastName Contact's last name
      * @param phoneNumber Contacts phone number
      * @param address Contacts address
+     * @return reference to Contact object created
      * @throws IllegalArgumentException in Contact object if parameters are invalid format
      */
-    public void add(String firstName, String lastName, String phoneNumber, String address) {
+    public Contact add(String firstName, String lastName, String phoneNumber, String address) {
         Contact entity = new Contact(firstName, lastName, phoneNumber, address);
         add(entity);
+        return entity;
     }
 
     /**
