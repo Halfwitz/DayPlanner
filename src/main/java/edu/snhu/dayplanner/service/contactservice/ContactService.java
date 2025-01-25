@@ -74,13 +74,13 @@ public class ContactService {
     /**
      * Update specified string field implemented in updatedField method implemented from Entity
      * @param id Unique identifier of the object to delete
-     * @param fieldName the field that is being modified (must be firstName, lastName, phone, address)
+     * @param field the field that is being modified (must be firstName, lastName, phone, address)
      * @param value new value to change specified field to
      * @throws IllegalArgumentException if object does not exist or field string is invalid
      */
-    public void updateEntityField(String id, String fieldName, String value) {
+    public void updateEntityField(String id, Contact.Field field, String value) {
         Contact entity = getEntityById(id); // throws exception if entity not found
-        entity.updateField(fieldName, value); // throws exception if fieldname or value invalid
+        entity.updateField(field, value); // throws exception if fieldname or value invalid
     }
 
     /**
@@ -90,7 +90,7 @@ public class ContactService {
      * @throws IllegalArgumentException if contact does not exist or firstName is invalid
      */
     public void updateFirstName(String id, String firstName) {
-        updateEntityField(id, "firstName", firstName);
+        updateEntityField(id, Contact.Field.FIRST_NAME, firstName);
     }
 
     /**
@@ -100,7 +100,7 @@ public class ContactService {
      * @throws IllegalArgumentException if contact does not exist or lastName is invalid
      */
     public void updateLastName(String id, String lastName) {
-        updateEntityField(id, "lastName", lastName);
+        updateEntityField(id, Contact.Field.LAST_NAME, lastName);
     }
     /**
      * Updates phone number of contact with given id to phoneNumber
@@ -109,7 +109,7 @@ public class ContactService {
      * @throws IllegalArgumentException if contact does not exist or phoneNumber is invalid
      */
     public void updatePhoneNumber(String id, String phoneNumber) {
-        updateEntityField(id, "phone", phoneNumber);
+        updateEntityField(id, Contact.Field.PHONE_NUMBER, phoneNumber);
     }
     /**
      * Updates address of contact with given id to address
@@ -118,7 +118,7 @@ public class ContactService {
      * @throws IllegalArgumentException if contact does not exist or address is invalid
      */
     public void updateAddress(String id, String address) {
-        updateEntityField(id, "address", address);
+        updateEntityField(id, Contact.Field.ADDRESS, address);
 
     }
 

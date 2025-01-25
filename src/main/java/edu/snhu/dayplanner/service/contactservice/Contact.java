@@ -132,17 +132,17 @@ public class Contact {
     }
 
     /**
-     * Sets specified field name to new specified value. Allowed field names are
-     * "firstname", "lastname", "phone", and "address".
-     * @param fieldName field to modify.
+     * Sets specified field name. Use contants from inner Field enum.
+     * @param field field to modify.
+     *
      * @throws IllegalArgumentException if parameter value is invalid
      */
-    protected void updateField(String fieldName, String value) {
-        switch (fieldName.toLowerCase()) {
-            case "firstname" -> setFirstName(value);
-            case "lastname" -> setLastName(value);
-            case "phone" -> setPhoneNumber(value);
-            case "address" -> setAddress(value);
+    protected void updateField(Contact.Field field, String value) {
+        switch (field) {
+            case FIRST_NAME -> setFirstName(value);
+            case LAST_NAME -> setLastName(value);
+            case PHONE_NUMBER -> setPhoneNumber(value);
+            case ADDRESS -> setAddress(value);
             default -> throw new IllegalArgumentException("Unknown field name");
         }
     }
@@ -167,5 +167,12 @@ public class Contact {
     }
     public String getAddress() {
         return address;
+    }
+
+    public enum Field {
+        FIRST_NAME,
+        LAST_NAME,
+        PHONE_NUMBER,
+        ADDRESS
     }
 }
