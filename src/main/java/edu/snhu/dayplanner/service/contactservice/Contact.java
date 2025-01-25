@@ -18,7 +18,7 @@
  * Modified: 10/09/2024 to remove outer package dependencies
  * Modified: 10/11/2024 to merge with superclass
  *****************************************************************************/
-package service.contactservice;
+package edu.snhu.dayplanner.service.contactservice;
 
 public class Contact {
     private final String id;

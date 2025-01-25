@@ -14,7 +14,7 @@
  * Modified: 10/09/2024 to remove outer package dependencies
  * Modified: 10/11/2024 to merge with superclass
  *****************************************************************************/
-package service.taskservice;
+package edu.snhu.dayplanner.service.taskservice;
 
 import java.util.HashMap;
 import java.util.Map;

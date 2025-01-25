@@ -12,7 +12,7 @@
  * - description must be required, non-null and <= 50 characters
  * Date: Due 10/06/2024
  *****************************************************************************/
-package service.appointmentservice;
+package edu.snhu.dayplanner.service.appointmentservice;
 import java.util.Date;
 
 public class Appointment {
