@@ -18,11 +18,12 @@
  *****************************************************************************/
 package edu.snhu.dayplanner.service.contactservice;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ContactService {
-
     /**
      * Container for set of entities, maps entity id to entity object.
      * (Use entity extensions (Task, Contact, Appointment))
@@ -134,5 +135,9 @@ public class ContactService {
             throw new IllegalArgumentException("Object with ID [" + id + "] does not exist");
         }
         return entity;
+    }
+
+    public List<Contact> getAllContacts() {
+        return  new ArrayList<>(entityMap.values());
     }
 }
