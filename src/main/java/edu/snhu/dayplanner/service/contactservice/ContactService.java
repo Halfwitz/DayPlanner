@@ -18,6 +18,8 @@
  *****************************************************************************/
 package edu.snhu.dayplanner.service.contactservice;
 
+import edu.snhu.dayplanner.service.ServiceFileUtility;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +53,25 @@ public class ContactService {
         Contact entity = new Contact(firstName, lastName, phoneNumber, address);
         add(entity);
         return entity;
+    }
+
+    public void addAll(List<Contact> contacts) {
+        for (Contact contact : contacts) {
+            add(contact);
+        }
+    }
+
+    public void addContactsFromFile(String filePath) {
+
+        ServiceFileUtility<Contact> fileUtil = new ServiceFileUtility<>(filePath,
+                new Contact("p", "p", "0000000000", "0"));
+        addAll(fileUtil.readFromFile());
+    }
+
+    public void writeContactsToFile(String filePath) {
+        ServiceFileUtility<Contact> fileUtil = new ServiceFileUtility<>(filePath,
+                new Contact("p", "p", "0000000000", "0"));
+        fileUtil.writeToFile(getAllContacts());
     }
 
     /**
