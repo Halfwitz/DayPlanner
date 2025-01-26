@@ -17,8 +17,10 @@ import javafx.scene.control.TextField;
  */
 public class ContactController
 {
-    ContactService contacts;
-    ContactView contactView;
+    private final ContactService contacts;
+    private final ContactView contactView;
+
+    private static final String CSV_FILE_PATH = "data/contacts.csv";
 
     /**
      * Initializes a controller instance that sets up the initial {@code ContactService} list and initializes a new
@@ -27,21 +29,11 @@ public class ContactController
     public ContactController() {
         // TODO: replace contacts initialization with file I/O
         contacts = new ContactService();
-        contacts.add("Jon", "Sno", "1112223456", "The North");
-        contacts.add("Michael", "L", "0001112222", "Home");
-        contacts.add("first", "last", "1234567890", "addy");
-        contacts.add("Frank", "Lin", "1234567890", "West");
-        contacts.add("Michael", "L", "0001112222", "Home");
-        contacts.add("fire", "truck", "1234567890", "weewoo");
-        contacts.add("Jon", "Sno", "1112223456", "The North");
-        contacts.add("Brandy", "L", "0001112222", "Home");
-        contacts.add("Flippo", "last", "1234567890", "addy");
-        contacts.add("Meliodas", "Lin", "1234567890", "West");
-        contacts.add("Jeramish", "L", "0001112222", "Home");
-        contacts.add("Escanor", "truck", "1234567890", "weewoo");
+        contacts.addContactsFromFile(CSV_FILE_PATH);
 
         contactView = new ContactView(this::handleRemoveContact, this::handleEditContact);
         contactView.getAddButton().setOnAction(event -> handleAddContact());
+        contactView.getSaveButton().setOnAction(event -> handleSaveContacts());
     }
 
     /**
@@ -105,6 +97,10 @@ public class ContactController
         } catch (IllegalArgumentException e) {
             System.out.println(e.getClass() + e.getMessage());
         }
+    }
+
+    private void handleSaveContacts() {
+        contacts.writeContactsToFile("data/contacts.csv");
     }
 
     /**
