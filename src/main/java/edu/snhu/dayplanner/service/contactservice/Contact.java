@@ -29,10 +29,17 @@ public class Contact {
     private String address;     // required, up to 30 chars
 
     // maximum allowed number of characters for each field
-    private final int ID_CHAR_LIMIT = 10;
-    private final int NAME_CHAR_LIMIT = 10;
-    private final int PHONE_CHAR_LIMIT = 10;
-    private final int ADDRESS_CHAR_LIMIT = 30;
+    private static final int ID_CHAR_LIMIT = 10;
+    private static final int NAME_CHAR_LIMIT = 10;
+    private static final int PHONE_CHAR_LIMIT = 10;
+    private static final int ADDRESS_CHAR_LIMIT = 30;
+
+    public enum Field {
+        FIRST_NAME,
+        LAST_NAME,
+        PHONE_NUMBER,
+        ADDRESS
+    }
 
     /**
      * Initializes a new Contact object
