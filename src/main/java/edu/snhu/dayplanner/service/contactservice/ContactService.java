@@ -40,7 +40,7 @@ public class ContactService {
 
     /**
      * Adds a contact object mapped to its unique id storage.
-     * @param firstName - Contact's first name
+     * @param firstName Contact's first name
      * @param lastName Contact's last name
      * @param phoneNumber Contacts phone number
      * @param address Contacts address
@@ -56,8 +56,8 @@ public class ContactService {
     /**
      * Removes object with given id from contacts map
      * @param object object to be removed from lsit
-     * @throws IllegalArgumentException if contact does not exist
      * @return object that was removed
+     * @throws IllegalArgumentException if contact does not exist
      */
     public Contact delete(Contact object) {
         return entityMap.remove(object.getId());
@@ -66,8 +66,8 @@ public class ContactService {
     /**
      * Removes object with given id from contacts map
      * @param id identifier of object to be removed from contacts map
-     * @throws IllegalArgumentException if object does not exist
      * @return object that was removed
+     * @throws IllegalArgumentException if object does not exist
      */
     public Contact delete(String id) {
         return delete(getEntityById(id));
@@ -105,6 +105,7 @@ public class ContactService {
     public void updateLastName(String id, String lastName) {
         updateEntityField(id, Contact.Field.LAST_NAME, lastName);
     }
+
     /**
      * Updates phone number of contact with given id to phoneNumber
      * @param id Unique identifier of the contact to update
@@ -114,6 +115,7 @@ public class ContactService {
     public void updatePhoneNumber(String id, String phoneNumber) {
         updateEntityField(id, Contact.Field.PHONE_NUMBER, phoneNumber);
     }
+
     /**
      * Updates address of contact with given id to address
      * @param id Unique identifier of the contact to update
@@ -126,7 +128,7 @@ public class ContactService {
     }
 
     /**
-     * Return an entity of type T from the stored map
+     * Return an entity of type Contact from the stored map
      * @param id the unique id used to identity entity in map
      * @return entity of type T associated with given id key from map
      * @throws IllegalArgumentException if entity with specified id can't be found
@@ -140,6 +142,6 @@ public class ContactService {
     }
 
     public List<Contact> getAllContacts() {
-        return  new ArrayList<>(entityMap.values());
+        return new ArrayList<>(entityMap.values());
     }
 }
