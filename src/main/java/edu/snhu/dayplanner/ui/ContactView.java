@@ -72,14 +72,14 @@ public class ContactView {
                 new Label("Remove")
         );
 
-        // Create SAVE button row
+        // Create ADD button row
         newFirstName = new TextField("first");
         newLastName = new TextField("last");
         newPhoneNumber = new TextField("phone");
         newAddress = new TextField("address");
         addButton = new Button("+");
 
-        HBox saveRow = new HBox(
+        HBox addRow = new HBox(
                 newFirstName,
                 newLastName,
                 newPhoneNumber,
@@ -87,8 +87,11 @@ public class ContactView {
                 addButton
         );
 
-        tableView.getChildren().addAll(colHead, tableDataView, saveRow);
-        root.getChildren().addAll(header, tableView);
+        saveButton = new Button("SAVE CHANGES");
+
+        tableView.getChildren().addAll(colHead, tableDataView, addRow);
+        root.getChildren().addAll(header, tableView, saveButton);
+
     }
 
     /**
