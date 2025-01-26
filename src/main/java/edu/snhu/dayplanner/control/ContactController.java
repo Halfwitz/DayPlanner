@@ -40,7 +40,7 @@ public class ContactController
         contacts.add("Jeramish", "L", "0001112222", "Home");
         contacts.add("Escanor", "truck", "1234567890", "weewoo");
 
-        contactView = new ContactView(this::handleRemoveContact);
+        contactView = new ContactView(this::handleRemoveContact, this::handleEditContact);
         contactView.getAddButton().setOnAction(event -> handleAddContact());
     }
 
@@ -101,7 +101,7 @@ public class ContactController
      */
     private void handleEditContact(Contact contact, Contact.Field field, String newValue) {
         try {
-            contacts.updateEntityField(contact.getId(), field, newValue);
+            contacts.updateEntityField(contact.getId(), field, newValue.trim());
         } catch (IllegalArgumentException e) {
             System.out.println(e.getClass() + e.getMessage());
         }

@@ -39,16 +39,22 @@ public class ContactView {
     private Button saveButton;
 
     private final BiConsumer<Contact, Node> onRemove;
+    private final TriConsumer<Contact, Contact.Field, String> onEdit;
 
     /**
      * Initializes this object to set up the layout with each element as a child of the {@code root} Vbox. Responsible
      * for creating the screen header, and empty contact table view with elements for a row of column headers, table
      * data, and a row for adding new contacts to the table data.
      * @param onRemove the method implementation that handles logic for when a contact is removed from the table.
+     * @param onEdit the method implementation that handles logic for when a contact field is edited in the table.
+     *               Should use Contact as reference to edited field, and Contact.Field as the field that is being
+     *               modified, and String as the new value.
+     *
      */
-    public ContactView(BiConsumer<Contact, Node> onRemove) {
+    public ContactView(BiConsumer<Contact, Node> onRemove, TriConsumer<Contact, Contact.Field, String> onEdit) {
         // set event listeners
         this.onRemove = onRemove;
+        this.onEdit = onEdit;
 
         root = new VBox();
 
@@ -116,21 +122,41 @@ public class ContactView {
         remove.setOnAction(event -> onRemove.accept(contact, row));
 
         // add contact data fields and remove button to row
+        // initialize contact editable fields
+        TextField firstNameField = new TextField(contact.getFirstName());
+        TextField lastNameField = new TextField(contact.getLastName());
+        TextField phoneNumberField = new TextField(contact.getPhone());
+        TextField addressField = new TextField(contact.getAddress());
+
+        // set listeners on each field to use onEdit method when edited
+        firstNameField.textProperty().addListener(
+                (observable, oldVal, newVal) -> onEdit.accept(contact, Contact.Field.FIRST_NAME, newVal)
+        );
+        lastNameField.textProperty().addListener(
+                (observable, oldVal, newVal) -> onEdit.accept(contact, Contact.Field.LAST_NAME, newVal)
+        );
+        phoneNumberField.textProperty().addListener(
+                (observable, oldVal, newVal) -> onEdit.accept(contact, Contact.Field.PHONE_NUMBER, newVal)
+        );
+        addressField.textProperty().addListener(
+                (observable, oldVal, newVal) -> onEdit.accept(contact, Contact.Field.ADDRESS, newVal)
+        );
+
+        // add each field and row remove button to row, and append to table data view
         row.getChildren().addAll(
-                new TextField(contact.getFirstName()),
-                new TextField(contact.getLastName()),
-                new TextField(contact.getPhone()),
-                new TextField(contact.getAddress()),
+                firstNameField,
+                lastNameField,
+                phoneNumberField,
+                addressField,
                 remove
         );
-        // append to table data Node.
         tableDataView.getChildren().add(row);
     }
 
     /**
      * Removes a row HBox node from the data table view. Called by {@code ContactController.handleRemoveContact} which
      * is triggered by the remove buttons.
-     * @param row
+     * @param row A Node referencing one of the rows contained within the data table.
      */
     public void removeRow(Node row) {
         tableDataView.getChildren().remove(row);
