@@ -24,7 +24,7 @@ public class Application extends javafx.application.Application
      * Sets up the primary application view using {@code NavController} to generate a functional view with navigation
      * to each screen. Automatically called by {@code launch} from within {@code main}.
      * @param stage the window containing the application display
-     * @throws IOException
+     * @throws IOException for stage creation issues
      */
     @Override
     public void start(Stage stage) throws IOException {
