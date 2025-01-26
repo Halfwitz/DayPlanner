@@ -20,7 +20,11 @@
  *****************************************************************************/
 package edu.snhu.dayplanner.service.contactservice;
 
-public class Contact {
+import edu.snhu.dayplanner.service.CsvSerializable;
+import edu.snhu.dayplanner.service.Entity;
+
+public class Contact extends Entity implements CsvSerializable<Contact> {
+
     private final String id;
     private static long idCounter = 0;
     private String firstName;   // required, up to 10 chars
@@ -176,10 +180,46 @@ public class Contact {
         return address;
     }
 
-    public enum Field {
-        FIRST_NAME,
-        LAST_NAME,
-        PHONE_NUMBER,
-        ADDRESS
+    /**
+     * Converts this object to a CSV line with the given delimiter. Appends attributes like
+     * "firstname%lastname%phone%address".
+     * Removes usage of the delimiter from original input (delimiter = '%', then "Mich%ael" = "Michael")
+     *
+     * @param delimiter char used to separate values in the CSV line. Removed from original value input.
+     * @return CSV string formatted in Contact field values separated by the delimiter
+     */
+    @Override
+    public String toCsv(char delimiter) {
+        return (
+                getFirstName().replace(String.valueOf(delimiter), "") + delimiter +
+                        getLastName().replace(String.valueOf(delimiter), "") + delimiter +
+                        getPhone().replace(String.valueOf(delimiter), "") + delimiter +
+                        getLastName().replace(String.valueOf(delimiter), "")
+        );
+    }
+
+    /**
+     * Converts the given csv string to a new Contact object. splits csv by the delimiter
+     * @param csv A single csv line with each attribute separated by a delimiter. Should contain 4 values for contact
+     *            first name, last name, phone number, and address fields. Ensure CSV values do not contain the
+     *            delimiter within themselves.
+     * @param delimiter The character used to split the csv string.
+     * @return a new contact object reference created from the delimiter values
+     * @throws IllegalArgumentException if contact fields are not valid format
+     * @see #Contact(String, String, String, String) valid field format descriptions
+     */
+    @Override
+    public Contact fromCsv(String csv, char delimiter) {
+        // TODO: add logging for failed fromCSV and parts format validation (check parts.length)
+        String[] parts = csv.split(String.valueOf("\\"+delimiter));
+        for (String part : parts) {
+            System.out.println(part);
+        }
+        return new Contact(
+                parts[0],
+                parts[1],
+                parts[2],
+                parts[3]
+        );
     }
 }
