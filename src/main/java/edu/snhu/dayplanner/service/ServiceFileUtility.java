@@ -23,7 +23,6 @@ public class ServiceFileUtility<T extends CsvSerializable<T>> {
     public ServiceFileUtility(String filePath, T prototype) {
         this.filePath = filePath;
         this.prototype = prototype; // used to deserialize entities from file
-
     }
 
     /**
@@ -51,7 +50,6 @@ public class ServiceFileUtility<T extends CsvSerializable<T>> {
                 e.printStackTrace();
             }
         }
-
         return entities;
     }
 
@@ -75,7 +73,5 @@ public class ServiceFileUtility<T extends CsvSerializable<T>> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
 }
