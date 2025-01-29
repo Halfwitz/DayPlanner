@@ -16,6 +16,8 @@ import javafx.scene.control.Label;
 public class NavController {
     private final NavigationView navView;
     ContactController contactController;
+    TaskController taskController;
+    AppointmentController appointmentController;
 
     /**
      * Initializes a new {@code NavigationView} object and each controller used for every screen of the application.
@@ -25,17 +27,19 @@ public class NavController {
         // TODO: implement controllers for Appointment and Task screens.
         navView = new NavigationView();
         contactController = new ContactController();
+        taskController = new TaskController();
+        appointmentController = new AppointmentController();
 
         navView.getContactButton().setOnAction(event -> {
             navView.setCenterView(contactController.getView());
         });
 
         navView.getTaskButton().setOnAction(event -> {
-            navView.setCenterView(new Label("TASKS"));
+            navView.setCenterView(taskController.getView());
         });
 
         navView.getAppointmentButton().setOnAction(event -> {
-            navView.setCenterView(new Label("APPOINTMENTS"));
+            navView.setCenterView(appointmentController.getView());
         });
     }
 
