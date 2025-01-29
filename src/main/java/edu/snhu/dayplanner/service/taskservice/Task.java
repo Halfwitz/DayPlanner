@@ -133,8 +133,11 @@ public class Task extends Entity<Task.Field> implements CsvSerializable<Task> {
      */
     @Override
     public Task fromCsv(String csv, char delimiter) {
-        // TODO: add logging for failed fromCSV and parts format validation (check parts.length)
         String[] parts = csv.split(String.valueOf("\\"+delimiter));
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Invalid CSV format");
+        }
+
         return new Task(parts[0], parts[1]);
     }
 }
