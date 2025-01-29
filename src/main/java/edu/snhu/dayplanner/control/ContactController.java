@@ -29,7 +29,7 @@ public class ContactController
      */
     public ContactController() {
         contacts = new ContactService();
-        contacts.addContactsFromFile(CSV_FILE_PATH);
+        contacts.addFromFile(CSV_FILE_PATH);
 
         contactView = new ContactView(this::handleRemoveContact, this::handleEditContact);
         contactView.getAddButton().setOnAction(event -> handleAddContact());
@@ -80,14 +80,14 @@ public class ContactController
      */
     private void handleEditContact(Contact contact, Contact.Field field, String newValue) {
         try {
-            contacts.updateEntityField(contact.getId(), field, newValue.trim());
+            contacts.updateField(contact.getId(), field, newValue.trim());
         } catch (IllegalArgumentException e) {
             System.out.println(e.getClass() + e.getMessage());
         }
     }
 
     private void handleSaveContacts() {
-        contacts.writeContactsToFile("data/contacts.csv");
+        contacts.writeToFile(CSV_FILE_PATH);
     }
 
     /**
