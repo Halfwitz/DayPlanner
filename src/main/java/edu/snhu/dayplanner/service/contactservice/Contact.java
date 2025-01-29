@@ -176,8 +176,8 @@ public class Contact extends Entity<Contact.Field> implements CsvSerializable<Co
      */
     @Override
     public Contact fromCsv(String csv, char delimiter) {
-        String[] parts = csv.split(String.valueOf("\\"+delimiter));
-        if (parts.length != 2) {
+        String[] parts = csv.split("\\"+delimiter);
+        if (parts.length != 4) {
             throw new IllegalArgumentException("Invalid CSV format");
         }
 
