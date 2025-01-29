@@ -53,7 +53,7 @@ public class AppointmentService extends Service<Appointment, Appointment.Field>
     @Override
     public void addFromFile(String filePath) {
         ServiceFileUtility<Appointment> fileUtil = new ServiceFileUtility<>(filePath,
-                new Appointment("p")); // TODO: fix date import/export
+                new Appointment("p"));
         addAll(fileUtil.readFromFile());
     }
 
