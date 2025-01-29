@@ -13,6 +13,7 @@
  *****************************************************************************/
 package edu.snhu.dayplanner.taskservice;
 
+import edu.snhu.dayplanner.service.IdGenerator;
 import org.junit.jupiter.api.*;
 import edu.snhu.dayplanner.service.taskservice.Task;
 import edu.snhu.dayplanner.service.taskservice.TaskService;
@@ -31,7 +32,7 @@ class TaskServiceTest
     // Reset the unique id incrementer to 0 after each test
     @AfterEach
     void tearDown() {
-        Task.resetCounter();
+        IdGenerator.resetCounter();
     }
 
     //Requirement: Test adding tasks with unique IDs
@@ -41,10 +42,10 @@ class TaskServiceTest
         taskService.add("eat dinner", "cook some lasagna");
 
         // task with id "0" should exist
-        assertNotNull(taskService.getEntityById("0"));
+        assertNotNull(taskService.getById("0"));
         // verify each field matches given input
-        assertEquals(taskService.getEntityById("0").getName(), "eat dinner");
-        assertEquals(taskService.getEntityById("0").getDescription(), "cook some lasagna");
+        assertEquals(taskService.getById("0").getName(), "eat dinner");
+        assertEquals(taskService.getById("0").getDescription(), "cook some lasagna");
     }
 
     @Test
@@ -54,8 +55,8 @@ class TaskServiceTest
         taskService.add("Read a book", "read 100 pages");
 
         // Ensure both tasks exist and have unique ids
-        Task task1 = taskService.getEntityById("0");
-        Task task2 = taskService.getEntityById("1");
+        Task task1 = taskService.getById("0");
+        Task task2 = taskService.getById("1");
         assertNotNull(task1);
         assertNotNull(task2);
         // check both tasks' id are not equal
@@ -69,10 +70,10 @@ class TaskServiceTest
         taskService.add("eat dinner", "cook some lasagna");
         String id = "0";
         // verify task with id '0' exists
-        assertNotNull(taskService.getEntityById(id));
+        assertNotNull(taskService.getById(id));
         // delete task by id 0 and verify no longer exists if exception is thrown
         taskService.delete(id);
-        assertThrows(IllegalArgumentException.class, () -> taskService.getEntityById(id));
+        assertThrows(IllegalArgumentException.class, () -> taskService.getById(id));
     }
 
     // Requirement 3: Update task fields per taskId
@@ -96,7 +97,7 @@ class TaskServiceTest
                 String id = "0";
                 taskService.updateName(id, "this task is 20 char");
                 // task with id "0" should match updated name field
-                assertEquals("this task is 20 char", taskService.getEntityById("0").getName());
+                assertEquals("this task is 20 char", taskService.getById("0").getName());
             }
 
             @DisplayName("Test updating description with 50 characters")
@@ -106,7 +107,7 @@ class TaskServiceTest
                 taskService.updateDescription(id, "this is an example of a 50 character description..");
                 // task with id "0" should have updated description field
                 assertEquals("this is an example of a 50 character description..",
-                        taskService.getEntityById(id).getDescription());
+                        taskService.getById(id).getDescription());
             }
         }
 
@@ -207,7 +208,7 @@ class TaskServiceTest
             @DisplayName("Test updating unknown field")
             @Test
             void testUpdateUnknownField() {
-                assertThrows(IllegalArgumentException.class, ()-> taskService.updateEntityField("0", "unknown", "value"));
+                assertThrows(IllegalArgumentException.class, ()-> taskService.updateField("0", Task.Field.valueOf("unknown"), "value"));
             }
         }
     }

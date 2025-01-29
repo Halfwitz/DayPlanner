@@ -14,6 +14,8 @@
  ****************************************************************/
 package edu.snhu.dayplanner.contactservice;
 
+import edu.snhu.dayplanner.service.IdGenerator;
+import edu.snhu.dayplanner.service.taskservice.Task;
 import org.junit.jupiter.api.*;
 import edu.snhu.dayplanner.service.contactservice.Contact;
 
@@ -24,7 +26,7 @@ class ContactTest
     // Reset the unique id incrementer to 0 after each test
     @AfterEach
     void tearDown() {
-        Contact.resetCounter();
+        IdGenerator.resetCounter();
     }
 
     // Test creating a contact object
@@ -48,25 +50,32 @@ class ContactTest
         @Test
         void testContactId10Chars() {
             Contact contact = new Contact("John", "Marston", "7034224806", "Phoenix, Arizona");
-            Contact.setCounter(9999999990L);
+            IdGenerator.setCounter(Contact.class,9999999990L);
             // create contact test and check that it contains the 10 char id
             Contact test = new Contact("John", "Marston", "1002003000", "Phoenix, Arizona");
             assertEquals("9999999990", test.getId());
         }
 
-        @DisplayName("Test that appointment ID is not null")
+        @DisplayName("Test that contact ID is not null")
         @Test
         void testAppointmentIdIsNotNull() {
             // id physically cannot be set to null
             Contact test = new Contact("John", "Marston", "1002003000", "Phoenix, Arizona");
             assertNotEquals(null, test.getId());
         }
+        @DisplayName("Test when contact ID is 10 characters, should not throw exception")
+        @Test
+        void testTaskId10Chars() {
+            IdGenerator.setCounter(Task.class, 9999999999L);
+            Task test = new Task("my id is 10 chars", "description");
+            assertEquals(test.getId(), "9999999999");
+        }
 
         @DisplayName("Test when contact ID is 11 characters, should throw exception")
         @Test
         void testContactIdTooLong() {
             Contact contact = new Contact("John", "Marston", "7034224806", "Phoenix, Arizona");
-            Contact.setCounter(9999999999L); //next contact will have this id
+            IdGenerator.setCounter(Contact.class, 9999999999L); //next contact will have this id
             new Contact("John", "Marston", "1002003000", "Phoenix, Arizona"); // next contact will overflow
             assertThrows(IllegalArgumentException.class, () -> {
                 new Contact("John", "Marston", "1002003000", "Phoenix, Arizona");

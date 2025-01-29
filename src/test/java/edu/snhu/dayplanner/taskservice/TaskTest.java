@@ -14,6 +14,7 @@
  ****************************************************************/
 package edu.snhu.dayplanner.taskservice;
 
+import edu.snhu.dayplanner.service.IdGenerator;
 import org.junit.jupiter.api.*;
 import edu.snhu.dayplanner.service.taskservice.Task;
 
@@ -24,7 +25,7 @@ class TaskTest
     // Reset the unique id incrementer to 0 after each test
     @AfterEach
     void tearDown() {
-        Task.resetCounter();
+        IdGenerator.resetCounter();
     }
 
     // Test creating a task object
@@ -42,15 +43,12 @@ class TaskTest
     @DisplayName("Task ID requirements testing")
     class testTaskId
     {
-        @DisplayName("Test when task ID is 10 characters, should throw exception")
+        @DisplayName("Test when task ID is 10 characters, should not throw exception")
         @Test
         void testTaskId10Chars() {
-            Task task = new Task("do the dishes", "rinse your plates and dry your cups");
-            Task.setCounter(9999999999L);
+            IdGenerator.setCounter(Task.class, 9999999999L);
             Task test = new Task("my id is 10 chars", "description");
-            assertThrows(IllegalArgumentException.class, () -> {
-                new Task("do the dishes", "rinse your plates and dry your cups");
-            });
+            assertEquals(test.getId(), "9999999999");
         }
 
         @DisplayName("Test when task ID is 11 characters, should throw exception")
@@ -59,7 +57,7 @@ class TaskTest
             // initialize id counter
             new Task("do the dishes", "rinse your plates and dry your cups");
             // set value of next id, should throw exception in construction
-            Task.setCounter(99999999999L);
+            IdGenerator.setCounter(Task.class, 99999999999L);
             assertThrows(IllegalArgumentException.class, () -> {
                 new Task("do the dishes", "rinse your plates and dry your cups");
             });

@@ -16,67 +16,53 @@
  *****************************************************************************/
 package edu.snhu.dayplanner.service.taskservice;
 
-import java.util.HashMap;
-import java.util.Map;
+import edu.snhu.dayplanner.service.Service;
+import edu.snhu.dayplanner.service.ServiceFileUtility;
 
-public class TaskService {
-    /**
-     * Container for set of entities, maps entity id to entity object.
-     * (Use entity extensions (Task, Contact, Appointment))
-     */
-    private final Map<String, Task> entityMap = new HashMap<>();
+public class TaskService extends Service<Task, Task.Field> {
 
     /**
      * Adds a task object mapped to its unique id in storage.
-     * @param name - Name of task
-     * @param description - Description of task
+     * @param name Name of task
+     * @param description Description of task
+     * @return reference to newly created object with name and description
      * @throws IllegalArgumentException in Task object if parameters are invalid format
      */
-    public void add(String name, String description) {
+    public Task add(String name, String description) {
         Task entity = new Task(name, description);
-        add(entity);
+        return add(entity);
     }
 
     /**
-     * Adds an object to the service storage, mapped to its id.
-     * @param object object to add to service.
+     * Reads stored CSV contents from a file to this storage object.
+     * Uses {@code ServiceFileUtility} to read a specified CSV file then convert each line to
+     * a task and return a list of those tasks. Then, the list is added to this object.
+     * Should convert contents to the object and add with {@code add} or {@code addAll}
+     * Passes a prototype task object to use for creation of new objects with (fromCsv)
+     * @param filePath the file to be read from into this object
      */
-    protected void add(Task object) {
-        entityMap.put(object.getId(), object);
+    @Override
+    public void addFromFile(String filePath) {
+        ServiceFileUtility<Task> fileUtil = new ServiceFileUtility<>(filePath,
+                new Task("p", "p"));
+        addAll(fileUtil.readFromFile());
     }
 
     /**
-     * Removes object of type T with given id from contacts map
-     * @param object object to be removed from list
-     * @throws IllegalArgumentException if contact does not exist
-     * @return object that was removed
+     * Writes stored objects to a CSV file stored in filePath.
+     * Uses {@code ServiceFileUtility} to convert Task objects into CSV format and writes
+     * to the file.
+     *
+     * @param filePath the file to be written into using contents of this object
      */
-    public Task delete(Task object) {
-        return entityMap.remove(object.getId());
-    }
-
-    /**
-     * Removes object of type T with given id from service map
-     * @param id identifier of object to be removed from service map
-     * @throws IllegalArgumentException if object does not exist
-     * @return object of type T that was removed
-     */
-    public Task delete(String id) {
-        return delete(getEntityById(id));
+    @Override
+    public void writeToFile(String filePath) {
+        ServiceFileUtility<Task> fileUtil = new ServiceFileUtility<>(filePath,
+                new Task("p", "p"));
+        fileUtil.writeToFile(getAll());
     }
 
     // UPDATE TASK FIELDS
-    /**
-     * Update specified string field implemented in updatedField method implemented from Entity
-     * @param id Unique identifier of the object to delete
-     * @param value new value to change specified field to
-     * @throws IllegalArgumentException if object does not exist or field string is invalid
-     */
-    public void updateEntityField(String id, String fieldName, String value) {
-        Task entity = getEntityById(id); // throws exception if entity not found
-        entity.updateField(fieldName, value); // throws exception if field name or value invalid
-    }
-
     /**
      * Updates name of task with given id to firstName
      * @param id Unique identifier of the task to update
@@ -84,7 +70,7 @@ public class TaskService {
      * @throws IllegalArgumentException if task does not exist or firstName is invalid
      */
     public void updateName(String id, String name) {
-        updateEntityField(id, "name", name);
+        updateField(id, Task.Field.NAME, name);
     }
 
     /**
@@ -94,20 +80,6 @@ public class TaskService {
      * @throws IllegalArgumentException if task does not exist or firstName is invalid
      */
     public void updateDescription(String id, String description) {
-        updateEntityField(id, "description", description);
-    }
-
-    /**
-     * Return an entity of type T from the stored map
-     * @param id the unique id used to identity entity in map
-     * @return entity of type T associated with given id key from map
-     * @throws IllegalArgumentException if entity with specified id can't be found
-     */
-    public Task getEntityById(String id) {
-        Task entity = entityMap.get(id);
-        if (entity == null) {
-            throw new IllegalArgumentException("Object with ID [" + id + "] does not exist");
-        }
-        return entity;
+        updateField(id, Task.Field.DESCRIPTION, description);
     }
 }

@@ -14,6 +14,7 @@
  *****************************************************************************/
 package edu.snhu.dayplanner.contactservice;
 
+import edu.snhu.dayplanner.service.IdGenerator;
 import org.junit.jupiter.api.*;
 import edu.snhu.dayplanner.service.contactservice.Contact;
 import edu.snhu.dayplanner.service.contactservice.ContactService;
@@ -32,7 +33,7 @@ class ContactServiceTest
     // Reset the unique id incrementer to 0 after each test
     @AfterEach
     void tearDown() {
-        Contact.resetCounter();
+        IdGenerator.resetCounter();
     }
 
     //Requirement: Test adding contacts with unique IDs
@@ -42,12 +43,12 @@ class ContactServiceTest
         contactService.add("Jon", "Snow", "1234567890", "The Wall");
 
         // contact with id "0" should exist
-        assertNotNull(contactService.getEntityById("0"));
+        assertNotNull(contactService.getById("0"));
         // verify each field matches given input
-        assertEquals(contactService.getEntityById("0").getFirstName(), "Jon");
-        assertEquals(contactService.getEntityById("0").getLastName(), "Snow");
-        assertEquals(contactService.getEntityById("0").getPhone(), "1234567890");
-        assertEquals(contactService.getEntityById("0").getAddress(), "The Wall");
+        assertEquals(contactService.getById("0").getFirstName(), "Jon");
+        assertEquals(contactService.getById("0").getLastName(), "Snow");
+        assertEquals(contactService.getById("0").getPhone(), "1234567890");
+        assertEquals(contactService.getById("0").getAddress(), "The Wall");
     }
     @Test
     @DisplayName("Test adding contacts uses unique IDs")
@@ -56,8 +57,8 @@ class ContactServiceTest
         contactService.add("Bugs", "Bunny", "0000000000", "Looney Town");
 
         // Ensure both contacts exist and have unique ids
-        Contact contact1 = contactService.getEntityById("0");
-        Contact contact2 = contactService.getEntityById("1");
+        Contact contact1 = contactService.getById("0");
+        Contact contact2 = contactService.getById("1");
         assertNotNull(contact1);
         assertNotNull(contact2);
         // check both contacts' id are not equal
@@ -71,10 +72,10 @@ class ContactServiceTest
         contactService.add("Jon", "Snow", "1234567890", "The Wall");
         String id = "0";
         // verify contact with id '0' exists
-        assertNotNull(contactService.getEntityById(id));
+        assertNotNull(contactService.getById(id));
         // delete contact by id 0 and verify no longer exists if exception is thrown
         contactService.delete(id);
-        assertThrows(IllegalArgumentException.class, () -> contactService.getEntityById(id));
+        assertThrows(IllegalArgumentException.class, () -> contactService.getById(id));
     }
 
     // Requirement 3: Update contact fields per contactId
@@ -98,7 +99,7 @@ class ContactServiceTest
                 String id = "0";
                 contactService.updateFirstName(id, "JonTenChar");
                 // contact with id "0" should match updated first name field
-                assertEquals("JonTenChar", contactService.getEntityById("0").getFirstName());
+                assertEquals("JonTenChar", contactService.getById("0").getFirstName());
             }
 
             @DisplayName("Test updating lastName with 10 characters")
@@ -107,7 +108,7 @@ class ContactServiceTest
                 String id = "0";
                 contactService.updateLastName(id, "Snow10Char");
                 // contact with id "0" should have updated last name field
-                assertEquals("Snow10Char", contactService.getEntityById(id).getLastName());
+                assertEquals("Snow10Char", contactService.getById(id).getLastName());
             }
 
             @DisplayName("Test updating phone number with 10 characters")
@@ -116,7 +117,7 @@ class ContactServiceTest
                 String id = "0";
                 contactService.updatePhoneNumber(id, "0000000000");
                 // contact with id "0" should have updated phone number field
-                assertEquals("0000000000", contactService.getEntityById(id).getPhone());
+                assertEquals("0000000000", contactService.getById(id).getPhone());
             }
 
             @DisplayName("Test updating address with 30 characters")
@@ -125,7 +126,7 @@ class ContactServiceTest
                 String id = "0";
                 contactService.updateAddress(id, "123456 Some Keep In Winterfell");
                 // contact with id "0" should have updated last name field
-                assertEquals("123456 Some Keep In Winterfell", contactService.getEntityById(id).getAddress());
+                assertEquals("123456 Some Keep In Winterfell", contactService.getById(id).getAddress());
             }
         }
 
@@ -296,7 +297,7 @@ class ContactServiceTest
             @DisplayName("Test updating unknown field")
             @Test
             void testUpdateUnknownField() {
-                assertThrows(IllegalArgumentException.class, ()-> contactService.updateEntityField("0", Contact.Field.valueOf("unknown"), "value"));
+                assertThrows(IllegalArgumentException.class, ()-> contactService.updateField("0", Contact.Field.valueOf("unknown"), "value"));
             }
         }
     }

@@ -13,33 +13,14 @@
  *
  * Date: Due 9/22/2024
  * Modified: 9/25/2024 to extend Service
- * Modified: 10/09/2024 to remove outer package dependencies
- * Modified: 10/11/2024 to merge with superclass
  *****************************************************************************/
 package edu.snhu.dayplanner.service.contactservice;
 
+import edu.snhu.dayplanner.service.Service;
 import edu.snhu.dayplanner.service.ServiceFileUtility;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class ContactService {
-    /**
-     * Container for set of entities, maps entity id to entity object.
-     * (Use entity extensions (Task, Contact, Appointment))
-     */
-    private final Map<String, Contact> entityMap = new HashMap<>();
-
-    /**
-     * Adds an object to the service storage, mapped to its id.
-     * @param object object to add to service.
-     */
-    protected void add(Contact object) {
-        entityMap.put(object.getId(), object);
-    }
-
+public class ContactService extends Service<Contact, Contact.Field> {
+    
     /**
      * Adds a contact object mapped to its unique id storage.
      * @param firstName Contact's first name
@@ -51,62 +32,39 @@ public class ContactService {
      */
     public Contact add(String firstName, String lastName, String phoneNumber, String address) {
         Contact entity = new Contact(firstName, lastName, phoneNumber, address);
-        add(entity);
-        return entity;
+        return add(entity);
     }
 
-    public void addAll(List<Contact> contacts) {
-        for (Contact contact : contacts) {
-            add(contact);
-        }
-    }
-
-    public void addContactsFromFile(String filePath) {
-
+    /**
+     * Reads stored CSV contents from a file to this storage object.
+     * Uses {@code ServiceFileUtility} to read a specified CSV file then convert each line to
+     * a contact and return a list of those contacts. Then, the list is added to this object.
+     * Should convert contents to the object and add with {@code add} or {@code addAll}
+     * Passes a prototype contact object to use for creation of new objects with (fromCsv)
+     * @param filePath the file to be read from into this object
+     */
+    @Override
+    public void addFromFile(String filePath) {
         ServiceFileUtility<Contact> fileUtil = new ServiceFileUtility<>(filePath,
                 new Contact("p", "p", "0000000000", "0"));
         addAll(fileUtil.readFromFile());
     }
 
-    public void writeContactsToFile(String filePath) {
+    /**
+     * Writes stored objects to a CSV file stored in filePath.
+     * Uses {@code ServiceFileUtility} to convert Contact objects into CSV format and writes
+     * to the file.
+     *
+     * @param filePath the file to be written into using contents of this object
+     */
+    @Override
+    public void writeToFile(String filePath) {
         ServiceFileUtility<Contact> fileUtil = new ServiceFileUtility<>(filePath,
                 new Contact("p", "p", "0000000000", "0"));
-        fileUtil.writeToFile(getAllContacts());
-    }
-
-    /**
-     * Removes object with given id from contacts map
-     * @param object object to be removed from lsit
-     * @return object that was removed
-     * @throws IllegalArgumentException if contact does not exist
-     */
-    public Contact delete(Contact object) {
-        return entityMap.remove(object.getId());
-    }
-
-    /**
-     * Removes object with given id from contacts map
-     * @param id identifier of object to be removed from contacts map
-     * @return object that was removed
-     * @throws IllegalArgumentException if object does not exist
-     */
-    public Contact delete(String id) {
-        return delete(getEntityById(id));
+        fileUtil.writeToFile(getAll());
     }
 
     // UPDATE CONTACT FIELDS
-    /**
-     * Update specified string field implemented in updatedField method implemented from Entity
-     * @param id Unique identifier of the object to delete
-     * @param field the field that is being modified (must be firstName, lastName, phone, address)
-     * @param value new value to change specified field to
-     * @throws IllegalArgumentException if object does not exist or field string is invalid
-     */
-    public void updateEntityField(String id, Contact.Field field, String value) {
-        Contact entity = getEntityById(id); // throws exception if entity not found
-        entity.updateField(field, value); // throws exception if fieldname or value invalid
-    }
-
     /**
      * Updates first name of contact with given id to firstName
      * @param id Unique identifier of the contact to update
@@ -114,7 +72,7 @@ public class ContactService {
      * @throws IllegalArgumentException if contact does not exist or firstName is invalid
      */
     public void updateFirstName(String id, String firstName) {
-        updateEntityField(id, Contact.Field.FIRST_NAME, firstName);
+        updateField(id, Contact.Field.FIRST_NAME, firstName);
     }
 
     /**
@@ -124,7 +82,7 @@ public class ContactService {
      * @throws IllegalArgumentException if contact does not exist or lastName is invalid
      */
     public void updateLastName(String id, String lastName) {
-        updateEntityField(id, Contact.Field.LAST_NAME, lastName);
+        updateField(id, Contact.Field.LAST_NAME, lastName);
     }
 
     /**
@@ -134,7 +92,7 @@ public class ContactService {
      * @throws IllegalArgumentException if contact does not exist or phoneNumber is invalid
      */
     public void updatePhoneNumber(String id, String phoneNumber) {
-        updateEntityField(id, Contact.Field.PHONE_NUMBER, phoneNumber);
+        updateField(id, Contact.Field.PHONE_NUMBER, phoneNumber);
     }
 
     /**
@@ -144,25 +102,7 @@ public class ContactService {
      * @throws IllegalArgumentException if contact does not exist or address is invalid
      */
     public void updateAddress(String id, String address) {
-        updateEntityField(id, Contact.Field.ADDRESS, address);
+        updateField(id, Contact.Field.ADDRESS, address);
 
-    }
-
-    /**
-     * Return an entity of type Contact from the stored map
-     * @param id the unique id used to identity entity in map
-     * @return entity of type T associated with given id key from map
-     * @throws IllegalArgumentException if entity with specified id can't be found
-     */
-    public Contact getEntityById(String id) {
-        Contact entity = entityMap.get(id);
-        if (entity == null) {
-            throw new IllegalArgumentException("Object with ID [" + id + "] does not exist");
-        }
-        return entity;
-    }
-
-    public List<Contact> getAllContacts() {
-        return new ArrayList<>(entityMap.values());
     }
 }
