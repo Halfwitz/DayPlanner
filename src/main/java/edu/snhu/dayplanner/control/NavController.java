@@ -1,11 +1,7 @@
 package edu.snhu.dayplanner.control;
 
-import edu.snhu.dayplanner.service.contactservice.ContactService;
-import edu.snhu.dayplanner.ui.ContactView;
 import edu.snhu.dayplanner.ui.NavigationView;
-import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Label;
 
 /**
  * Responsible for initializing the main application user interface and navigation logic for transitioning to each
