@@ -1,8 +1,7 @@
 module edu.snhu.dayplanner {
-    requires javafx.controls;
-    requires javafx.fxml;
 
     requires org.controlsfx.controls;
+    requires tornadofx.controls;
 
     opens edu.snhu.dayplanner to javafx.fxml;
     exports edu.snhu.dayplanner;
