@@ -24,7 +24,7 @@ public class ServiceFileUtility<T extends CsvSerializable<T>> {
 
     public ServiceFileUtility(String filePath, T prototype) {
         this.filePath = filePath;
-        this.prototype = prototype;
+        this.prototype = prototype; // used to deserialize entities from file
 
     }
 
