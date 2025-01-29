@@ -14,69 +14,21 @@
  *****************************************************************************/
 package edu.snhu.dayplanner.service.appointmentservice;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import edu.snhu.dayplanner.service.Service;
+import edu.snhu.dayplanner.service.ServiceFileUtility;
 
-public class AppointmentService {
+import java.time.LocalDateTime;
 
-    /**
-     * Container for set of appointments, maps appointment id to appointment object.
-     */
-    private final Map<String, Appointment> appointmentMap = new HashMap<>();
-
-    /**
-     * Return an appointment of type T from the stored map
-     * @param id the unique id used to identify appointment in map
-     * @return appointment associated with given id key from map
-     * @throws IllegalArgumentException if appointment with specified id can't be found
-     */
-    public Appointment getAppointmentById(String id) {
-        Appointment appointment = appointmentMap.get(id);
-        if (appointment == null) {
-            throw new IllegalArgumentException("Object with ID [" + id + "] does not exist");
-        }
-        return appointment;
-    }
-
-    /**
-     * Removes object of type T with given id from contacts map
-     * @param object object to be removed from list
-     * @throws IllegalArgumentException if contact does not exist
-     * @return object that was removed
-     */
-    public Appointment delete(Appointment object) {
-        return appointmentMap.remove(object.getId());
-
-    }
-
-    /**
-     * Removes object of type T with given id from service map
-     * @param id identifier of object to be removed from service map
-     * @throws IllegalArgumentException if object does not exist
-     * @return object of type T that was removed
-     */
-    public Appointment delete(String id) {
-        return delete(getAppointmentById(id));
-    }
-
-    /**
-     * Adds an object to the service storage, mapped to its id.
-     * @param object object to add to service.
-     */
-    protected void add(Appointment object) {
-        appointmentMap.put(object.getId(), object);
-    }
-
+public class AppointmentService extends Service<Appointment, Appointment.Field>
+{
     /**
      * Adds an appointment object mapped to its unique id in storage.
      * @param date - Scheduled date of the appointment (Must not be non-null, in the past)
      * @param description - Description of the appointment (Must be non-null, no more than 50 characters)
      * @throws IllegalArgumentException in Appointment object if parameters are invalid format
      */
-    public void add(Date date, String description) {
-        Appointment appointment = new Appointment(date, description); // create object with specified parameters
-        add(appointment); // super method. Adds to appointmentMap HashMap using unique ID
+    public Appointment add(LocalDateTime date, String description) {
+        return add(new Appointment(date, description)); // super method. Adds to appointmentMap HashMap using unique ID
     }
 
     /**
@@ -90,7 +42,34 @@ public class AppointmentService {
         add(appointment); // super method. Adds to appointmentMap HashMap using unique ID
     }
 
-    // super class contains method for delete appointments per ID
+    /**
+     * Reads stored CSV contents from a file to this storage object.
+     * Uses {@code ServiceFileUtility} to read a specified CSV file then convert each line to
+     * a appointment and return a list of those appointments. Then, the list is added to this object.
+     * Should convert contents to the object and add with {@code add} or {@code addAll}
+     * Passes a prototype appointment object to use for creation of new objects with (fromCsv)
+     * @param filePath the file to be read from into this object
+     */
+    @Override
+    public void addFromFile(String filePath) {
+        ServiceFileUtility<Appointment> fileUtil = new ServiceFileUtility<>(filePath,
+                new Appointment("p")); // TODO: fix date import/export
+        addAll(fileUtil.readFromFile());
+    }
+
+    /**
+     * Writes stored objects to a CSV file stored in filePath.
+     * Uses {@code ServiceFileUtility} to convert Appointment objects into CSV format and writes
+     * to the file.
+     *
+     * @param filePath the file to be written into using contents of this object
+     */
+    @Override
+    public void writeToFile(String filePath) {
+        ServiceFileUtility<Appointment> fileUtil = new ServiceFileUtility<>(filePath,
+                new Appointment("p"));
+        fileUtil.writeToFile(getAll());
+    }
 
     // UPDATE APPOINTMENT FIELDS
     /**
@@ -101,11 +80,11 @@ public class AppointmentService {
      *             to current time.
      * @throws IllegalArgumentException if appointment does not exist or date is invalid.
      */
-    public void updateDate(String id, Date date) {
+    public void updateDate(String id, LocalDateTime date) {
         if (date == null) { // to avoid NullPointerException
-            updateAppointmentField(id, "date", null); // purposefully throws IllegalArgumentException
+            this.updateField(id, Appointment.Field.DATE, null); // purposefully throws IllegalArgumentException
         } else {
-            updateAppointmentField(id, "date", String.valueOf(date.getTime()));
+            this.updateField(id, Appointment.Field.DATE, date.toString());
         }
     }
 
@@ -114,10 +93,11 @@ public class AppointmentService {
      * @param id Unique identifier of the appointment to update
      * @throws IllegalArgumentException if appointment does not exist or date is invalid
      */
-    public Date updateDate(String id) {
-        Date current = new Date();
+    public LocalDateTime updateDate(String id) {
+        LocalDateTime current = LocalDateTime.now();
+
         // sets date to current system time and specifies it can't be before this time
-        updateAppointmentField(id, "date-now", null);
+        updateField(id, Appointment.Field.CURRENT_DATE, null);
         return current; // returns current (helpful in testing)
     }
 
@@ -128,17 +108,6 @@ public class AppointmentService {
      * @throws IllegalArgumentException if appointment does not exist or date is invalid
      */
     public void updateDescription(String id, String description) {
-        updateAppointmentField(id, "description", description);
-    }
-
-    /**
-     * Update specified string field implemented in updatedField method implemented from Appointment
-     * @param id Unique identifier of the object to delete
-     * @param value new value to change specified field to
-     * @throws IllegalArgumentException if object does not exist or field string is invalid
-     */
-    public void updateAppointmentField(String id, String fieldName, String value) {
-        Appointment appointment = getAppointmentById(id); // throws exception if appointment not found
-        appointment.updateField(fieldName, value); // throws exception if fieldname or value invalid
+        updateField(id, Appointment.Field.DESCRIPTION, description);
     }
 }

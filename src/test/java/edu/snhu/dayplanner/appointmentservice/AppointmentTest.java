@@ -13,25 +13,26 @@
  ****************************************************************/
 package edu.snhu.dayplanner.appointmentservice;
 
+import edu.snhu.dayplanner.service.IdGenerator;
 import org.junit.jupiter.api.*;
 import edu.snhu.dayplanner.service.appointmentservice.Appointment;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class AppointmentTest
 {
-    Date date;
+    LocalDateTime date;
     @BeforeEach
     void setUp() {
         // use date 100000ms after current system time for each date (unless otherwise specified)
-        date = new Date(new Date().getTime() + 100000);
+        date = LocalDateTime.now().plusSeconds(100);
     }
 
     @AfterEach
     void tearDown() {
-        Appointment.resetCounter(); // Reset the unique id incrementer to 0 after each test
+        IdGenerator.resetCounter(); // Reset the unique id incrementer to 0 after each test
     }
 
     // Test creating an appointment object
@@ -55,7 +56,7 @@ class AppointmentTest
             // create an appointment to initialize the id counter
             Appointment appointment = new Appointment(date, "have a meeting");
             // set the current idCounter to a 10 character long, next created object will use this id
-            Appointment.setCounter(9999999999L);
+            IdGenerator.setCounter(Appointment.class, 9999999999L);
             // create appointment using above id and check that it contains that specified id.
             Appointment test = new Appointment(date, "description");
             assertEquals("9999999999", test.getId());
@@ -67,7 +68,7 @@ class AppointmentTest
             // initialize the id counter to 0
             Appointment appointment = new Appointment(date, "have a meeting");
             // set id counter to 11 character long, next created object should throw exception
-            Appointment.setCounter(99999999999L);
+            IdGenerator.setCounter(Appointment.class,99999999999L);
             assertThrows(IllegalArgumentException.class, () -> new Appointment(date, "description"));
         }
 
@@ -96,7 +97,7 @@ class AppointmentTest
         @Test
         void testAppointmentDateInFuture() {
             // use date 1 ms after current system time
-            date = new Date(new Date().getTime() + 1);
+            date = LocalDateTime.now().plusNanos(1000000);
             // date should match given date when initializing with this date
             Appointment app = new Appointment(date, "have a meeting");
             assertEquals(date, app.getDate());;
@@ -106,7 +107,7 @@ class AppointmentTest
         @Test
         void testAppointmentDateInPast() {
             // use date 1 ms behind current system time
-            date = new Date(new Date().getTime() - 1);
+            date = LocalDateTime.now().minusNanos(1000000);
             // should throw exception when initializing with this date
             assertThrows(IllegalArgumentException.class, () ->
                     new Appointment(date, "have a meeting"));
@@ -118,7 +119,7 @@ class AppointmentTest
             Appointment app = new Appointment("have a meeting"); // sets to current date
 
             // verifies date exists and is within 5ms of current system time--accounts for difference in time between statement
-            assertTrue(Math.abs(app.getDate().getTime() - new Date().getTime()) <= 5);
+            assertTrue(Math.abs(app.getDate().getNano() - LocalDateTime.now().getNano()) <= 5000000);
         }
 
         @DisplayName("Test when appointment date is null, should throw exception")

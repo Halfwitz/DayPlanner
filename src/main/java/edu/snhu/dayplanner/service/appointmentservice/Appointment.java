@@ -1,59 +1,83 @@
 /******************************************************************************
- * <h1>Module Five Milestone</h1>
  * [Appointment.java]
  * Author: Michael Lorenz
- * - CS320 - Software Test, Automation QA
  * - Southern New Hampshire University
- *
- * Description:
- * This class represents an appointment object with fields for date and description.
- * Parent class gives this a unique id when initialized. It enforces constraints:
- * - date must be required, non-null, and not in the past
- * - description must be required, non-null and <= 50 characters
- * Date: Due 10/06/2024
- *****************************************************************************/
+ ****************************************************************************/
 package edu.snhu.dayplanner.service.appointmentservice;
-import java.util.Date;
+import edu.snhu.dayplanner.service.CsvSerializable;
+import edu.snhu.dayplanner.service.Entity;
+import edu.snhu.dayplanner.service.InputValidator;
+import java.time.LocalDateTime;
 
-public class Appointment {
-    private final String id;
-    private static Long idCounter = 0L;
-    private Date appointmentDate;
-    private String description;
+/**
+ * This class represents an appointment object with fields for date and description.
+ *  Parent class gives this a unique id when initialized.
+ * <ul>It enforces constraints:
+ * <li>description must be non-null and <= 50 chars</li>
+ * <li>date must not be before time of initialization</li>
+ * </ul>
+ * This class provides methods for field updates, validation, and CSV serialization/deserialization.
+ * @author Michael Lorenz
+ * @version 1.0
+ */
+public class Appointment extends Entity<Appointment.Field> implements CsvSerializable<Appointment> {
+    private LocalDateTime appointmentDate; // required, must not be in past
+    private String description; // required, up to 50 chars
 
-    private final int ID_CHAR_LIMIT = 10;
-    private final int DESC_CHAR_LIMIT = 50;
+    private static final int DESC_CHAR_LIMIT = 50;
 
-    // create Appointment with unique id and verify all parameters
-    public Appointment(Date date, String description) {
-        this.id = verifyNonNullWithinChars(generateId(), 1, ID_CHAR_LIMIT);
-        this.appointmentDate = verifyDateNotInPast(date);
-        this.description = verifyNonNullWithinChars(description, 1, DESC_CHAR_LIMIT);
+    // fields of an appointment, used by updateField method to indicate which field to modify
+    public enum Field {
+        DATE,
+        CURRENT_DATE,
+        DESCRIPTION
     }
 
-    // create Appointment for current system time with description and verify all parameters
+    /**
+     * Initializes a new {@code Appointment} with a specific date and description.
+     *
+     * @param date        The scheduled date and time for the appointment (non-null, must not be in the past).
+     * @param description The description of the appointment (non-null, up to 50 characters).
+     * @throws IllegalArgumentException if parameters are invalid.
+     */
+    public Appointment(LocalDateTime date, String description) {
+        super(); // generate unique id
+        this.appointmentDate = InputValidator.verifyDateNotInPast(date);
+        this.description = InputValidator.verifyNonNullWithinChars(description, 1, DESC_CHAR_LIMIT);
+    }
+
+    /**
+     * Initializes a new {@code Appointment} with the current date and time as the appointment date.
+     *
+     * @param description The description of the appointment (non-null, up to 50 characters).
+     * @throws IllegalArgumentException if the description is invalid.
+     */
     public Appointment(String description) {
-        this.id = verifyNonNullWithinChars(generateId(), 1, ID_CHAR_LIMIT);
-        this.description = verifyNonNullWithinChars(description, 1, DESC_CHAR_LIMIT);
+        super();
+        this.description = InputValidator.verifyNonNullWithinChars(description, 1, DESC_CHAR_LIMIT);
         setAppointmentDate(); // sets date to current time
 
     }
 
-    // Generate a unique ID:
-    private static String generateId() {
-        String id = String.valueOf(idCounter);
-        idCounter++;
-        return id;
-    }
-
-    // reset id counter - for testing only
-    public static void resetCounter() {
-        setCounter(0L);
-    }
-
-    // modify specific counter - meant for testing only
-    public static void setCounter(Long value) {
-        idCounter = value;
+    /**
+     * Updates the specified field of the appointment.
+     *
+     * @param field The field to update. Supported values:
+     *              <ul>
+     *              <li>{@code CURRENT_DATE} - Updates the date to the current time (value is ignored).</li>
+     *              <li>{@code DATE} - Updates the date to the provided value (non-null, valid date string).</li>
+     *              <li>{@code DESCRIPTION} - Updates the description to the provided value (non-null, up to 50 characters).</li>
+     *              </ul>
+     * @param value The new value for the field. Must satisfy the field's constraints.
+     * @throws IllegalArgumentException if the field or value is invalid.
+     */
+    protected void updateField(Field field, String value) {
+        switch (field) {
+            case DATE -> setAppointmentDate(value != null ? LocalDateTime.parse(value) : null);
+            case CURRENT_DATE -> setAppointmentDate();
+            case DESCRIPTION -> setAppointmentDescription(value);
+            default -> throw new IllegalArgumentException("Unknown field name");
+        }
     }
 
     /**
@@ -61,8 +85,8 @@ public class Appointment {
      * @param date new date to set
      * @throws IllegalArgumentException if date is invalid or comes before current system time
      */
-    private void setAppointmentDate(Date date) {
-        appointmentDate = verifyDateNotInPast(date);
+    private void setAppointmentDate(LocalDateTime date) {
+        appointmentDate = InputValidator.verifyDateNotInPast(date);
     }
 
     /**
@@ -70,98 +94,76 @@ public class Appointment {
      * @throws IllegalArgumentException if date is invalid or comes before minDate
      */
     private void setAppointmentDate() {
-        Date current = new Date();
-        appointmentDate = verifyDateNotBeforeOther(current, current);
+        LocalDateTime current = LocalDateTime.now();
+        appointmentDate = InputValidator.verifyDateNotBeforeOther(current, current);
     }
 
+    /**
+     * Sets the description of the appointment
+     * @param description the new description
+     * @throws IllegalArgumentException if description is invalid (null or not within 1-50 characters)
+     */
     private void setAppointmentDescription(String description) {
-        this.description = verifyNonNullWithinChars(description, 1, DESC_CHAR_LIMIT);
+        this.description = InputValidator.verifyNonNullWithinChars(description, 1, DESC_CHAR_LIMIT);
     }
 
     /**
-     * Used publicly to update various fields depending on fieldName
-     * @param fieldName the name of the field to update.
-     *                  <p>case "date" -> updates appointmentDate. Value should be string representation of a
-     *                                  Date object's time. (String.valueOf(Date object.getTime()))  non-null.</p>
-     *                  <p>case "description" -> updates description field to specified value field.
-     *                                            Value Should be non-null and <= 50 chars.</p>
-     * @param value the new value to set for the specified field.
-     * @throws IllegalArgumentException if fieldName does not match expected strings
+     * Converts this appointment into a CSV-formatted string.
+     *
+     * @param delimiter The character used to separate fields in the CSV string.
+     * @return A CSV-formatted string representing the appointment.
      */
-    public void updateField(String fieldName, String value) {
-        switch (fieldName.toLowerCase()) {
-            case "date" -> setAppointmentDate(new Date(Long.parseLong(value)));
-            case "date-now" -> setAppointmentDate();
-            case "description" -> setAppointmentDescription(value);
-            default -> throw new IllegalArgumentException("Unknown field name");
-        }
+    @Override
+    public String toCsv(char delimiter) {
+        return (getDate().toString() + delimiter +
+                getDescription().replace(String.valueOf(delimiter), ""));
     }
 
     /**
-     * Verify the given date is not before current system time, throws exception if it is.
-     * @param date The date to verify is not before current system time
-     * @return the original date if no exception.
-     * @throws IllegalArgumentException if date is null or before current system time.
+     * Creates a new {@code Appointment} from a CSV-formatted string.
+     *
+     * @param csv       The CSV string containing the appointment data.
+     * @param delimiter The character used to separate fields in the CSV string.
+     * @return A new {@code Appointment} created from the CSV data.
+     * @throws IllegalArgumentException if the CSV data is invalid.
      */
-    private Date verifyDateNotInPast(Date date) {
-        return verifyDateNotBeforeOther(date, new Date());
-    }
-
-    /**
-     * Verify the given date does not come before other date, throws exception if it is.
-     * @param date The date to verify is not null or before other date
-     * @return the original date if no exception thrown
-     * @throws IllegalArgumentException if date is null or before other time.
-     */
-    private Date verifyDateNotBeforeOther(Date date, Date other) {
-        if (date == null) { // edge case: throw exception if date is null
-            throw new IllegalArgumentException("Illegal date. Date must not be null.");
-        } else if (date.before(other)) { // throw exception if date is before current time
-            throw new IllegalArgumentException("Illegal date-(" + date.getTime() + "ms.) Date must be not be before date-(" + other.getTime() + "ms.)" );
+    @Override
+    public Appointment fromCsv(String csv, char delimiter) {
+        String[] parts = csv.split(String.valueOf("\\"+delimiter));
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Invalid CSV format");
         }
 
-        // return original date if no exceptions thrown
-        return date;
-    }
-
-    /**
-     * Verifies and returns a string if it is a valid format, throws an exception if it isn't
-     * @param str string to verify
-     * @param minCharNum minimum allowed number of characters (inclusive)
-     * @param maxCharNum maximum allowed number of characters (inclusive)
-     * @return the original str string
-     * @throws IllegalArgumentException if str is null, contains leading or trailing whitespace, or not within
-     * allowed number of chars (inclusive)
-     */
-    protected String verifyNonNullWithinChars(String str, int minCharNum, int maxCharNum) {
-        // CHECK EDGE CASES
-        if (str == null) {
-            throw new IllegalArgumentException("Invalid string, must be non-null value.");
-        }
-        // no leading/trailing whitespace
-        String trueStr = str.strip();
-        // if str and str.strip() lengths are different, contains invalid leading/trailing characters
-        if (str.length() != str.strip().length()) { // (strip() removes leading/trailing whitespace
-            throw new IllegalArgumentException("Invalid string, be sure to remove leading or trailing spaces.");
-        }
-        // if str has too little or too many characters, throw exception
-        if (trueStr.length() > maxCharNum || trueStr.length() < minCharNum) {
-            throw new IllegalArgumentException("Invalid string, " + str + ", must be within" + minCharNum + "-" + maxCharNum + " characters.");
-        }
-        // Return data if no exceptions thrown
-        return str;
+        return new Appointment(LocalDateTime.parse(parts[0]), parts[1]);
     }
 
     // GETTERS
-    public Date getDate() {
+    /**
+     * Returns the value of the specified field as a string.
+     *
+     * @param field The field to retrieve. (Valid fields are DATE and DESCRIPTION)
+     * @return The value of the field.
+     * @throws IllegalArgumentException if the field is unknown.
+     */
+    @Override
+    public String getFieldValue(Field field) {
+        switch (field) {
+            case DATE -> {
+                return getDate().toString();
+            } case DESCRIPTION -> {
+                return getDescription();
+            } default -> throw new IllegalArgumentException("Unknown field");
+        }
+    }
+    public LocalDateTime getDate() {
         return appointmentDate;
     }
-
     public String getDescription() {
         return description;
     }
 
-    public String getId() {
-        return id;
+    @Override
+    public String toString() {
+        return appointmentDate + ": " + description;
     }
 }
