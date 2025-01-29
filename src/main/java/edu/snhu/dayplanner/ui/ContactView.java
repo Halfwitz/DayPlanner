@@ -1,10 +1,13 @@
 package edu.snhu.dayplanner.ui;
 
 import edu.snhu.dayplanner.service.contactservice.Contact;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import java.util.Arrays;
@@ -47,6 +50,7 @@ public class ContactView {
         this.onEdit = onEdit;
 
         root = new VBox();
+        root.setAlignment(Pos.TOP_CENTER);
 
         // create view heading
         Label header = new Label("CONTACTS");
@@ -54,6 +58,7 @@ public class ContactView {
         // initialize components and data table with columns for each field in Task.Field
         dataTable =  new TableView<Contact, Contact.Field>(Arrays.asList(Contact.Field.values()), onRemove, onEdit);
         tableView = dataTable.getView();
+        tableView.setMaxWidth(600);
         addButton = dataTable.getAddButton();
         saveButton = new Button("SAVE CHANGES");
 

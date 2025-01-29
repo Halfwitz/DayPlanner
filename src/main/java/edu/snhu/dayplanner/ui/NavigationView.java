@@ -47,8 +47,9 @@ public class NavigationView {
 
         // arrange elements in border layout
         rootLayout.setLeft(navBar);
-        rootLayout.setTop(new Label("Header"));
-        rootLayout.setCenter(new VBox(new Label("Center")));
+        VBox startBox = new VBox(new Label("<- Click a button to get started"));
+        startBox.setAlignment(Pos.CENTER);
+        rootLayout.setCenter(startBox);
     }
 
     private void setButtonStyle(Button button) {

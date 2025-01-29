@@ -1,11 +1,14 @@
 package edu.snhu.dayplanner.ui;
 
 import edu.snhu.dayplanner.service.appointmentservice.Appointment;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import tornadofx.control.DateTimePicker;
 
 import java.time.LocalDateTime;
@@ -27,7 +30,7 @@ public class AppointmentTableView extends TableView<Appointment, Appointment.Fie
     private final List<Appointment.Field> fields;
     private final TriConsumer<Appointment,Appointment.Field, String> onEdit;
     private final BiConsumer<Appointment, Node> onRemove;
-    private Button addButton;
+    private final Button addButton;
 
     /**
      * Constructs a new {@code AppointmentTableView} instance.
@@ -36,11 +39,14 @@ public class AppointmentTableView extends TableView<Appointment, Appointment.Fie
      * @param onRemove A handler to call when a row's remove button is clicked.
      * @param onEdit   A handler to call when a field is edited.
      */
-    public AppointmentTableView(List<Appointment.Field> fields, BiConsumer<Appointment, Node> onRemove, TriConsumer<Appointment, Appointment.Field, String> onEdit) {
+    public AppointmentTableView(List<Appointment.Field> fields,
+                                BiConsumer<Appointment, Node> onRemove,
+                                TriConsumer<Appointment, Appointment.Field, String> onEdit) {
         super(fields, onRemove, onEdit);
         this.fields = fields;
         this.onEdit = onEdit;
         this.onRemove = onRemove;
+        addButton = getAddButton();
     }
 
     /**
@@ -52,12 +58,15 @@ public class AppointmentTableView extends TableView<Appointment, Appointment.Fie
         HBox entryRow = new HBox();
 
         TextField descriptionInput = new TextField();
+        descriptionInput.setMinWidth(80);
+        HBox.setHgrow(descriptionInput, Priority.ALWAYS);
         descriptionInput.setPromptText(Appointment.Field.DESCRIPTION.toString());
 
         DateTimePicker timePicker = new DateTimePicker();
-        addButton = new Button("+");
-
-        entryRow.getChildren().addAll(descriptionInput, timePicker, addButton);
+        timePicker.setMinWidth(80);
+        timePicker.setPromptText("YYYY-MM-DD HH:MM");
+        HBox.setHgrow(timePicker, Priority.ALWAYS);
+        entryRow.getChildren().addAll(descriptionInput, timePicker, getAddButton());
         return entryRow;
 
     }
@@ -88,17 +97,25 @@ public class AppointmentTableView extends TableView<Appointment, Appointment.Fie
     @Override
     public void createDataRow(final Appointment appointment) {
         HBox dataRow = new HBox(); // holds each element of row
+        setRowStyle(dataRow);
 
         // set fields and listeners
         TextField descriptionField = new TextField(appointment.getFieldValue(fields.getFirst()));
+        HBox.setHgrow(descriptionField, Priority.ALWAYS);
         descriptionField.textProperty().addListener(
                 (observable, oldValue, newValue) -> onEdit.accept(appointment, Appointment.Field.DESCRIPTION, newValue));
 
         // get appointment date and set date field with that value.
         DateTimePicker dateField = new DateTimePicker();
+        HBox.setHgrow(dateField, Priority.ALWAYS);
         dateField.setDateTimeValue(LocalDateTime.parse(appointment.getFieldValue(Appointment.Field.DATE)));
 
-        // set listener to send date time in (ms) to event handler
+        // set listener to send date time string to event handler
+        dateField.dateTimeValueProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    System.out.println("Date changed: " + newValue); //TODO: remove debug
+                    onEdit.accept(appointment, Appointment.Field.DATE, dateField.getDateTimeValue().toString());
+                });
         dateField.getEditor().textProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     System.out.println("Date changed: " + newValue); //TODO: remove debug
@@ -106,18 +123,11 @@ public class AppointmentTableView extends TableView<Appointment, Appointment.Fie
         });
 
         Button removeButton = new Button("X");
+        setButtonStyle(removeButton, "#dc3545");
         removeButton.setOnAction(e -> onRemove.accept(appointment, dataRow));
 
         dataRow.getChildren().addAll(descriptionField, dateField, removeButton);
         getTableDataView().getChildren().add(dataRow);
     }
 
-    /**
-     * Retrieves the add button for the new entry row.
-     * @return The add button.
-     */
-    @Override
-    public Button getAddButton() {
-        return addButton;
-    }
 }
