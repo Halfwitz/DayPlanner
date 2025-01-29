@@ -11,6 +11,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utility class for handling file-based storage and retrieval of entities implementing the {@link CsvSerializable} interface.
+ * Provides methods to read from and write to a file using a consistent delimiter for CSV serialization.
+ *
+ * @param <T> The type of entity being handled, which must implement {@link CsvSerializable}.
+ */
 public class ServiceFileUtility<T extends CsvSerializable<T>> {
     private final String filePath;
     private final T prototype;
@@ -22,6 +28,12 @@ public class ServiceFileUtility<T extends CsvSerializable<T>> {
 
     }
 
+    /**
+     * Reads entities from the file at the specified file path.
+     * Each line in the file is parsed into an entity using the prototype's {@code fromCsv} method.
+     *
+     * @return A list of entities read from the file. If the file does not exist, returns an empty list.
+     */
     public List<T> readFromFile() {
         List<T> entities = new ArrayList<>();
 
@@ -40,6 +52,12 @@ public class ServiceFileUtility<T extends CsvSerializable<T>> {
         return entities;
     }
 
+    /**
+     * Writes a list of entities to the file at the specified file path.
+     * Each entity is serialized to a CSV-formatted string using its {@code toCsv} method.
+     *
+     * @param items The list of entities to write to the file.
+     */
     public void writeToFile(List<T> items) {
         try {
             Path path = Paths.get(filePath);
