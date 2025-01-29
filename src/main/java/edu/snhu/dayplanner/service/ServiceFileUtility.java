@@ -61,7 +61,7 @@ public class ServiceFileUtility<T extends CsvSerializable<T>> {
     public void writeToFile(List<T> items) {
         try {
             Path path = Paths.get(filePath);
-            Files.createDirectories(path.getParent());
+            Files.createDirectories(path.getParent()); // create directory if it does not exist
 
             try (BufferedWriter writer = Files.newBufferedWriter(path)) {
                 for (T item : items) {
