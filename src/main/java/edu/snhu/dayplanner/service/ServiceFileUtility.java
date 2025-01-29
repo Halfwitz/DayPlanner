@@ -42,7 +42,12 @@ public class ServiceFileUtility<T extends CsvSerializable<T>> {
             try (BufferedReader reader = Files.newBufferedReader(path)) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    entities.add(prototype.fromCsv(line, DELIMITER));
+                    try {
+                        entities.add(prototype.fromCsv(line, DELIMITER));
+                    } catch (Exception e) {
+                        System.out.println("ServiceFileUtility["+filePath+"]: Could not create object from file line \"" + line + "\""
+                        + "\n\t(" + e.getMessage() + ")") ;
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
