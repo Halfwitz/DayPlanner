@@ -3,9 +3,10 @@ package edu.snhu.dayplanner.control;
 import edu.snhu.dayplanner.service.contactservice.Contact;
 import edu.snhu.dayplanner.service.contactservice.ContactService;
 import edu.snhu.dayplanner.ui.ContactView;
+
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.TextField;
+import java.util.List;
 
 /**
  * Manages the logic for the Contact section of the Day Planner Application. This handles user interactions,
@@ -27,7 +28,6 @@ public class ContactController
      * {@code ContactView}. Configures event handlers for adding, removing, and editing contacts.
      */
     public ContactController() {
-        // TODO: replace contacts initialization with file I/O
         contacts = new ContactService();
         contacts.addContactsFromFile(CSV_FILE_PATH);
 
@@ -44,27 +44,14 @@ public class ContactController
      */
     private void handleAddContact() {
         try {
-            // retrieve input field references
-            TextField firstNameField = contactView.getNewFirstName();
-            TextField lastNameField = contactView.getNewLastName();
-            TextField phoneField = contactView.getNewPhoneNumber();
-            TextField addressField = contactView.getNewAddress();
+            List<String> input = contactView.getDataTable().getNewEntryInput();
 
             // add contact to contacts using input strings, throws IllegalArgumentException for invalid input
-            Contact c = contacts.add(
-                    firstNameField.getText(),
-                    lastNameField.getText(),
-                    phoneField.getText(),
-                    addressField.getText()
-            );
+            Contact c = contacts.add(input.get(0), input.get(1), input.get(2), input.get(3));
 
             // add new row to table and clear input forms.
-            contactView.createContactRow(c);
-            firstNameField.clear();
-            lastNameField.clear();
-            phoneField.clear();
-            addressField.clear();
-
+            contactView.getDataTable().createDataRow(c);
+            contactView.getDataTable().clearNewEntryInput();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
@@ -79,7 +66,7 @@ public class ContactController
      */
     private void handleRemoveContact(Contact contact, Node tableRow) {
         contacts.delete(contact); // FIXME: throws error if contact does not exist. Unsure if this case is possible yet.
-        contactView.removeRow(tableRow);
+        contactView.getDataTable().removeRow(tableRow);
     }
 
     /**
@@ -109,7 +96,7 @@ public class ContactController
      * @return the {@code Parent} node containing the {Contact view elements}
      */
     public Parent getView() {
-        contactView.updateTable(contacts.getAllContacts());
+        contactView.getDataTable().updateTable(contacts.getAll());
         return contactView.getView();
     }
 }
