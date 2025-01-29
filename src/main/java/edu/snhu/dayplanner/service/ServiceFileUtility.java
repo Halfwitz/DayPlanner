@@ -1,7 +1,5 @@
 package edu.snhu.dayplanner.service;
 
-import edu.snhu.dayplanner.service.contactservice.Contact;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
