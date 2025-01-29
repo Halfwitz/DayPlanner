@@ -178,9 +178,6 @@ public class Contact extends Entity<Contact.Field> implements CsvSerializable<Co
     public Contact fromCsv(String csv, char delimiter) {
         // TODO: add logging for failed fromCSV and parts format validation (check parts.length)
         String[] parts = csv.split(String.valueOf("\\"+delimiter));
-        for (String part : parts) {
-            System.out.println(part);
-        }
         return new Contact(
                 parts[0],
                 parts[1],

@@ -135,9 +135,6 @@ public class Task extends Entity<Task.Field> implements CsvSerializable<Task> {
     public Task fromCsv(String csv, char delimiter) {
         // TODO: add logging for failed fromCSV and parts format validation (check parts.length)
         String[] parts = csv.split(String.valueOf("\\"+delimiter));
-        for (String part : parts) {
-            System.out.println(part);
-        }
         return new Task(parts[0], parts[1]);
     }
 }
