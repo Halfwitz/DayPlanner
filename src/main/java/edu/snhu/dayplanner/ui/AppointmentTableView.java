@@ -66,7 +66,7 @@ public class AppointmentTableView extends TableView<Appointment, Appointment.Fie
         timePicker.setMinWidth(80);
         timePicker.setPromptText("YYYY-MM-DD HH:MM");
         HBox.setHgrow(timePicker, Priority.ALWAYS);
-        entryRow.getChildren().addAll(descriptionInput, timePicker, getAddButton());
+        entryRow.getChildren().addAll(timePicker, descriptionInput, getAddButton());
         return entryRow;
 
     }
@@ -78,12 +78,10 @@ public class AppointmentTableView extends TableView<Appointment, Appointment.Fie
     public List<String> getNewEntryInput() {
         List<String> inputs = new ArrayList<>();
 
-        // adds input from the DESCRIPTION input field to list
-        inputs.add(((TextField)(getNewEntryRow().getChildren().getFirst())).getText());
-
         // gets the time in MS from the time picker and adds to list
-        inputs.add(String.valueOf(
-                ((DateTimePicker)getNewEntryRow().getChildren().get(1)).getDateTimeValue().toString()));
+        inputs.add(((DateTimePicker)getNewEntryRow().getChildren().getFirst()).getDateTimeValue().toString());
+        // adds input from the DESCRIPTION input field to list
+        inputs.add(((TextField)getNewEntryRow().getChildren().get(1)).getText());
 
         return inputs;
     }
@@ -100,7 +98,7 @@ public class AppointmentTableView extends TableView<Appointment, Appointment.Fie
         setRowStyle(dataRow);
 
         // set fields and listeners
-        TextField descriptionField = new TextField(appointment.getFieldValue(fields.getFirst()));
+        TextField descriptionField = new TextField(appointment.getFieldValue(Appointment.Field.DESCRIPTION));
         HBox.setHgrow(descriptionField, Priority.ALWAYS);
         descriptionField.textProperty().addListener(
                 (observable, oldValue, newValue) -> onEdit.accept(appointment, Appointment.Field.DESCRIPTION, newValue));
@@ -126,7 +124,7 @@ public class AppointmentTableView extends TableView<Appointment, Appointment.Fie
         setButtonStyle(removeButton, "#dc3545");
         removeButton.setOnAction(e -> onRemove.accept(appointment, dataRow));
 
-        dataRow.getChildren().addAll(descriptionField, dateField, removeButton);
+        dataRow.getChildren().addAll(dateField, descriptionField, removeButton);
         getTableDataView().getChildren().add(dataRow);
     }
 

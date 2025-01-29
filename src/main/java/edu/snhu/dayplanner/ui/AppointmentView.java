@@ -26,10 +26,10 @@ import java.util.function.BiConsumer;
 public class AppointmentView
 {
     private final VBox root;
-    private final TableView<Appointment, Appointment.Field> dataTable;
+    private final AppointmentTableView dataTable;
     private final VBox tableView;
-    private Button addButton;
-    private Button saveButton;
+    private final Button addButton;
+    private final Button saveButton;
 
     private final BiConsumer<Appointment, Node> onRemove;
     private final TriConsumer<Appointment, Appointment.Field, String> onEdit;
@@ -55,8 +55,8 @@ public class AppointmentView
 
         // initialize components and data table with columns for each field in Appointment.Field
         List<Appointment.Field> fields = new ArrayList<>();
-        fields.add(Appointment.Field.DESCRIPTION);
         fields.add(Appointment.Field.DATE);
+        fields.add(Appointment.Field.DESCRIPTION);
         dataTable =  new AppointmentTableView(fields, onRemove, onEdit);
 
         tableView = dataTable.getView();
@@ -75,7 +75,7 @@ public class AppointmentView
         return root;
     }
 
-    public TableView<Appointment, Appointment.Field> getDataTable() {
+    public AppointmentTableView getDataTable() {
         return dataTable;
     }
 

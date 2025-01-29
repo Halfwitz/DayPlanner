@@ -49,12 +49,13 @@ public class AppointmentController
         try {
             // returns input in order of the fields {description, date string}
             List<String> input = appointmentView.getDataTable().getNewEntryInput();
+            System.out.println(input);
 
             // Parse the date and create a new appointment (throws IllegalArgumentException for invalid input
-            LocalDateTime date = LocalDateTime.parse(input.get(1));
+            LocalDateTime date = LocalDateTime.parse(input.get(0));
 
             // add appointment to appointments using input strings,
-            Appointment newAppointment = appointments.add(date, input.get(0));
+            Appointment newAppointment = appointments.add(date, input.get(1));
 
             // add new row to table and clear input forms.
             appointmentView.getDataTable().clearNewEntryInput();

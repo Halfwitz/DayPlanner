@@ -125,7 +125,7 @@ public class TableView<T extends Entity<F>, F extends Enum<F>> {
         entryRow.setFillHeight(true);
         entryRow.setStyle("-fx-padding: 10px; -fx-border-color: black;" +
                 " -fx-border-width: 1px;" +
-                " -fx-background-color: #f4f4f4;");
+                " -fx-background-color: #e4e4e4;");
     }
 
     /**
