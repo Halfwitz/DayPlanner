@@ -26,7 +26,7 @@ public class ContactController
     private static final String CSV_FILE_PATH = "data/contacts.csv";
     private final ContactService contacts;
     private final ContactView contactView;
-    private final Set<Node> invalidFields;
+    private final Set<Contact> invalidFields;
 
     /**
      * Initializes a controller instance that sets up the initial {@code ContactService} list and initializes a new
@@ -82,6 +82,7 @@ public class ContactController
     private void handleRemoveContact(Contact contact, Node tableRow) {
         contacts.delete(contact); // FIXME: throws error if contact does not exist. Unsure if this case is possible yet.
         contactView.getDataTable().removeRow(tableRow);
+        invalidFields.remove(contact);
         setHasChanges(true);
     }
 
@@ -102,16 +103,15 @@ public class ContactController
         }
 
         try {
-            invalidFields.remove(inputField);
             contacts.updateField(contact.getId(), field, newValue.trim());
+            invalidFields.remove(contact);
             setHasChanges(true);
             hideErrorMessage(inputField);
         } catch (IllegalArgumentException e) {
-            invalidFields.add(inputField);
+            invalidFields.add(contact);
             setHasChanges(true);
 
             showErrorMessage(inputField, e.getMessage());
-            System.out.println("Invalid input: " + e.getMessage());
         }
     }
 
