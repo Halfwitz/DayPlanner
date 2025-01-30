@@ -3,17 +3,14 @@ package edu.snhu.dayplanner.ui;
 import edu.snhu.dayplanner.service.appointmentservice.Appointment;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import tornadofx.control.DateTimePicker;
-
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.function.BiConsumer;
 
