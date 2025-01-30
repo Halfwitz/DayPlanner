@@ -3,7 +3,6 @@ package edu.snhu.dayplanner.control;
 import edu.snhu.dayplanner.service.contactservice.Contact;
 import edu.snhu.dayplanner.service.contactservice.ContactService;
 import edu.snhu.dayplanner.ui.ContactView;
-
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -24,11 +23,10 @@ import java.util.Set;
  */
 public class ContactController
 {
+    private static final String CSV_FILE_PATH = "data/contacts.csv";
     private final ContactService contacts;
     private final ContactView contactView;
-    private Set<Node> invalidFields;
-
-    private static final String CSV_FILE_PATH = "data/contacts.csv";
+    private final Set<Node> invalidFields;
 
     /**
      * Initializes a controller instance that sets up the initial {@code ContactService} list and initializes a new
@@ -75,10 +73,11 @@ public class ContactController
 
     /**
      * Handles removing a contact from the {@code contacts} service and contact table view. This method is called by
-     * each Contact row's inline delete button created in the view. The method is passed as paramater in
+     * each Contact row's inline delete button created in the view. The method is passed as parameter in
      * {@code ContactView} constructors using {{@code BiConsumer} interface}
-     * @param contact
-     * @param tableRow
+     *
+     * @param contact contact being removed from {@code ContactService}
+     * @param tableRow row being removed from {@code ContactView} data table
      */
     private void handleRemoveContact(Contact contact, Node tableRow) {
         contacts.delete(contact); // FIXME: throws error if contact does not exist. Unsure if this case is possible yet.
@@ -90,9 +89,10 @@ public class ContactController
      * Handles editing a contact's specified field within the {@code contacts} service if contact field is edited in
      * table view.
      * This is called by each Contact row's text fields upon changes. An IllegalArgumentException is caught for invalid
-     * input and logs an error. FIXME: Should also indicate the input issue to the User
-     * @param contact the contact to modify
-     * @param field the Contact.Field to be updated
+     * input and logs an error.
+     *
+     * @param contact    the contact to modify
+     * @param field      the Contact.Field to be updated
      * @param inputField the Node containing input for the new value. (must be TextField)
      */
     private void handleEditContact(Contact contact, Contact.Field field, Node inputField) {
@@ -115,6 +115,10 @@ public class ContactController
         }
     }
 
+    /**
+     * Handles saving the updated contacts stored in memory to the {@code CSV_FILE_PATH} file
+     * Responsible for disable the "Save changes" button and refreshing the data table.
+     */
     private void handleSaveContacts() {
         contacts.writeToFile(CSV_FILE_PATH);
         contactView.getDataTable().updateTable(contacts.getAll());
@@ -165,6 +169,7 @@ public class ContactController
     /**
      * Refreshes the contact table view and returns the root node containing the Contact screen elements. Used in
      * {@code NavController} to overlay the Contact screen in the layout.
+     *
      * @return the {@code Parent} node containing the {Contact view elements}
      */
     public Parent getView() {
