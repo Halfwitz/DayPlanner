@@ -1,5 +1,6 @@
 package edu.snhu.dayplanner.ui;
 
+import edu.snhu.dayplanner.service.contactservice.Contact;
 import edu.snhu.dayplanner.service.taskservice.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,17 +24,7 @@ import java.util.function.BiConsumer;
  * @author Michael Lorenz
  * @version 1.0, 1/25/2025
  */
-public class TaskView {
-    private final VBox root;
-    private final TableView<Task, Task.Field> dataTable;
-    private final VBox tableView;
-    private final Button addButton;
-    private final Button saveButton;
-    private final Label errorLabel;
-
-
-    private final BiConsumer<Task, Node> onRemove;
-    private final TriConsumer<Task, Task.Field, Node> onEdit;
+public class TaskView extends EntityView<Task, Task.Field> {
 
     /**
      * Initializes this object to set up the layout with each element as a child of the {@code root} Vbox. Responsible
@@ -46,67 +37,9 @@ public class TaskView {
      *
      */
     public TaskView(BiConsumer<Task, Node> onRemove, TriConsumer<Task, Task.Field, Node> onEdit) {
-        // set event listeners
-        this.onRemove = onRemove;
-        this.onEdit = onEdit;
-
-        root = new VBox();
-        root.setAlignment(Pos.TOP_CENTER);
-        root.setStyle("-fx-background-color: #fff");
-
-        // create view heading
-        Label header = new Label("TASKS");
-        header.setStyle("-fx-font-weight: bold; -fx-font-size: 24px; -fx-font-style: italic;");
-        // initialize components and data table with columns for each field in Task.Field
-
-        errorLabel = new Label();
-        errorLabel.setStyle("-fx-text-fill: red;");
-        errorLabel.setVisible(false);
-        errorLabel.setWrapText(true);
-
-        dataTable =  new TableView<Task, Task.Field>(Arrays.asList(Task.Field.values()), onRemove, onEdit);
-        tableView = dataTable.getView();
-        tableView.setMaxWidth(700);
-
-        addButton = dataTable.getAddButton();
-        saveButton = new Button("SAVE CHANGES");
-        VBox.setMargin(saveButton, new Insets(40));
-        setButtonStyle(saveButton, "#00AA00");
-
-        root.getChildren().addAll(header, tableView, saveButton);
+        super("TASKS", Arrays.asList(Task.Field.values()), onRemove, onEdit);
 
     }
 
-    private void setButtonStyle(Button button, String color) {
-        button.setStyle("-fx-background-color: " + color + "; -fx-text-fill: white;" +
-                " -fx-font-wieght: bold; -fx-border-radius: 5px; -fx-font-size: 16px;");
-    }
-
-    /**
-     * Return the parent VBox node containing each element of the Tasks screen.
-     * @return root node displaying Tasks title, task data table, and new task fields.
-     */
-    public Parent getView() {
-        return root;
-    }
-
-    public TableView<Task, Task.Field> getDataTable() {
-        return dataTable;
-    }
-
-    /**
-     * @return reference to new task add button element.
-     */
-    public Button getAddButton() {
-        return addButton;
-    }
-
-    /**
-     * @return reference to save task first name field element.
-     */
-    public Button getSaveButton() {
-        return saveButton;
-    }
-    public Label getErrorLabel() { return errorLabel; }
 
 }

@@ -63,11 +63,11 @@ public class TaskController
             // add new row to table and clear input forms.
             taskView.getDataTable().clearNewEntryInput();
             taskView.getDataTable().createDataRow(newTask);
-            setErrorLabel(taskView.getErrorLabel(), "", false);
+            setErrorLabel(taskView.getAddEntityErrorLabel(), "", false);
             setHasChanges(true);
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
-            setErrorLabel(taskView.getErrorLabel(), e.getMessage(), true);
+            setErrorLabel(taskView.getAddEntityErrorLabel(), e.getMessage(), true);
         }
     }
 
