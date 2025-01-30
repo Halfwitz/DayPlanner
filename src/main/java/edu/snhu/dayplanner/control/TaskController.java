@@ -19,10 +19,9 @@ import java.util.List;
  */
 public class TaskController
 {
+    private static final String CSV_FILE_PATH = "data/tasks.csv";
     private final TaskService tasks;
     private final TaskView taskView;
-
-    private static final String CSV_FILE_PATH = "data/tasks.csv";
 
     /**
      * Initializes a controller instance that sets up the initial {@code TaskService} list and initializes a new
@@ -63,6 +62,7 @@ public class TaskController
      * Handles removing a task from the {@code tasks} service and task table view. This method is called by
      * each Task row's inline delete button created in the view. The method is passed as paramater in
      * {@code TaskView} constructors using {{@code BiConsumer} interface}
+     *
      * @param task
      * @param tableRow
      */
@@ -76,8 +76,9 @@ public class TaskController
      * table view.
      * This is called by each Task row's text fields upon changes. An IllegalArgumentException is caught for invalid
      * input and logs an error. FIXME: Should also indicate the input issue to the User
-     * @param task the task to modify
-     * @param field the Task.Field to be updated
+     *
+     * @param task       the task to modify
+     * @param field      the Task.Field to be updated
      * @param inputField the Node containing input for the new value. (Must be TextField
      */
     private void handleEditTask(Task task, Task.Field field, Node inputField) {
@@ -108,6 +109,7 @@ public class TaskController
     /**
      * Refreshes the task table view and returns the root node containing the Task screen elements. Used in
      * {@code NavController} to overlay the Task screen in the layout.
+     *
      * @return the {@code Parent} node containing the {Task view elements}
      */
     public Parent getView() {
