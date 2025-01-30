@@ -62,12 +62,12 @@ public class ContactController
             // add new row to table and clear input forms.
             contactView.getDataTable().createDataRow(c);
             contactView.getDataTable().clearNewEntryInput();
-            setErrorLabel(contactView.getErrorLabel(), "", false);
+            setErrorLabel(contactView.getAddEntityErrorLabel(), "", false);
             setHasChanges(true);
 
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
-            setErrorLabel(contactView.getErrorLabel(), e.getMessage(), true);
+            setErrorLabel(contactView.getAddEntityErrorLabel(), e.getMessage(), true);
         }
     }
 
