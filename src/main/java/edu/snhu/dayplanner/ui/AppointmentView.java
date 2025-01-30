@@ -51,6 +51,8 @@ public class AppointmentView
 
         root = new VBox();
         root.setAlignment(Pos.TOP_CENTER);
+        root.setStyle("-fx-background-color: #fff");
+
 
         // create view heading
         Label header = new Label("APPOINTMENTS");

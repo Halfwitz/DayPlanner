@@ -49,6 +49,7 @@ public class TaskView {
 
         root = new VBox();
         root.setAlignment(Pos.TOP_CENTER);
+        root.setStyle("-fx-background-color: #fff");
 
         // create view heading
         Label header = new Label("TASKS");
