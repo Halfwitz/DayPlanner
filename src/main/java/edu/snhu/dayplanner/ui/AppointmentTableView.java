@@ -23,10 +23,8 @@ import java.util.function.BiConsumer;
  *
  */
 public class AppointmentTableView extends TableView<Appointment, Appointment.Field> {
-    private final List<Appointment.Field> fields;
     private final TriConsumer<Appointment,Appointment.Field, Node> onEdit;
     private final BiConsumer<Appointment, Node> onRemove;
-    private final Button addButton;
 
     /**
      * Constructs a new {@code AppointmentTableView} instance.
@@ -39,10 +37,8 @@ public class AppointmentTableView extends TableView<Appointment, Appointment.Fie
                                 BiConsumer<Appointment, Node> onRemove,
                                 TriConsumer<Appointment, Appointment.Field, Node> onEdit) {
         super(fields, onRemove, onEdit);
-        this.fields = fields;
         this.onEdit = onEdit;
         this.onRemove = onRemove;
-        addButton = getAddButton();
     }
 
     /**
