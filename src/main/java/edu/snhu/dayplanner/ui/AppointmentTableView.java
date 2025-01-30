@@ -98,26 +98,16 @@ public class AppointmentTableView extends TableView<Appointment, Appointment.Fie
 
         // set fields and listeners
         TextField descriptionField = new TextField(appointment.getFieldValue(Appointment.Field.DESCRIPTION));
-        Label descErrorLabel = new Label();
-        descErrorLabel.setStyle("-fx-text-fill: red; -fx-font-size: 8px;");
-        descErrorLabel.setVisible(false);
-
-        VBox descFieldBox = new VBox(descriptionField, descErrorLabel);
+        VBox descFieldBox = wrapWithErrorLabel(descriptionField);
         HBox.setHgrow(descFieldBox, Priority.ALWAYS);
-        //HBox.setHgrow(descriptionField, Priority.ALWAYS);
+
         descriptionField.textProperty().addListener(
                 (observable, oldValue, newValue) -> onEdit.accept(appointment, Appointment.Field.DESCRIPTION, descriptionField));
 
         // get appointment date and set date field with that value.
         DateTimePicker dateField = new DateTimePicker();
-        Label dateErrorLabel = new Label();
-        descErrorLabel.setStyle("-fx-text-fill: red; -fx-font-size: 8px;");
-        descErrorLabel.setVisible(false);
-
-        VBox dateFieldBox = new VBox(dateField, dateErrorLabel);
+        VBox dateFieldBox = wrapWithErrorLabel(dateField);
         HBox.setHgrow(dateFieldBox, Priority.ALWAYS);
-
-        //HBox.setHgrow(dateField, Priority.ALWAYS);
         dateField.setDateTimeValue(LocalDateTime.parse(appointment.getFieldValue(Appointment.Field.DATE)));
 
         // set listener to send date time string to event handler
