@@ -149,6 +149,22 @@ public class TableView<T extends Entity<F>, F extends Enum<F>> {
     }
 
     /**
+     * Returns a VBox containing two children: inputNode, and Label.
+     * Label is styled to display error messages, which should be modified to display the proper input error
+     * @param inputNode The node being contained with a Label in VBox
+     * @return the container with both inputNode and the error label.
+     */
+    protected VBox wrapWithErrorLabel(Node inputNode) {
+        Label errorLabel = new Label();
+        errorLabel.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+        errorLabel.setVisible(false);
+        errorLabel.setWrapText(true);
+        errorLabel.setMaxWidth(150);
+
+        return new VBox(inputNode, errorLabel);
+    }
+
+    /**
      * Creates a data row for an entity, including editable fields and a remove button.
      * Responsible for assigning actions to data row actions (remove and edit)
      * Each child of the data row is a VBox containing both the input field, and a label with
@@ -163,23 +179,16 @@ public class TableView<T extends Entity<F>, F extends Enum<F>> {
         for (F field : fields) {
             // prefill with data from field
             TextField inputField = new TextField(object.getFieldValue(field));
-            Label errorLabel = new Label();
-            errorLabel.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
-            errorLabel.setVisible(false);
-            errorLabel.setWrapText(true);
-            errorLabel.setMaxWidth(150);
 
-            VBox fieldBox = new VBox(inputField, errorLabel);
+            VBox fieldBox = wrapWithErrorLabel(inputField);
             HBox.setHgrow(fieldBox, Priority.ALWAYS);
-
 
             // set listeners on each field to use onEdit method when edited
             inputField.textProperty().addListener(
-                    (observable, oldValue, newValue) ->
-                        onEdit.accept(object, field, inputField)
-            );
+                    (obs, old, newValue) ->
+                        onEdit.accept(object, field, inputField));
 
-            dataRow.getChildren().add(new VBox(inputField, errorLabel));
+            dataRow.getChildren().add(fieldBox);
         }
 
         // create remove button with action using onRemove listener provided to constructor
