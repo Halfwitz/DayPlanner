@@ -2,6 +2,7 @@ package edu.snhu.dayplanner.control;
 
 import edu.snhu.dayplanner.service.appointmentservice.Appointment;
 import edu.snhu.dayplanner.service.appointmentservice.AppointmentService;
+import edu.snhu.dayplanner.service.taskservice.Task;
 import edu.snhu.dayplanner.ui.AppointmentView;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -19,11 +20,7 @@ import java.util.List;
  * @author Michael Lorenz
  * @version 1.0, 1/25/2025
  */
-public class AppointmentController
-{
-    private final AppointmentService appointments;
-    private final AppointmentView appointmentView;
-
+public class AppointmentController extends EntityController<Appointment, Appointment.Field, AppointmentView> {
     private static final String CSV_FILE_PATH = "data/appointments.csv";
 
     /**
@@ -32,102 +29,38 @@ public class AppointmentController
      * and sets up event handlers for adding, editing, and removing appointments.
      */
     public AppointmentController() {
-        appointments = new AppointmentService();
-        appointments.addFromFile(CSV_FILE_PATH);
-
-        appointmentView = new AppointmentView(this::handleRemoveAppointment, this::handleEditAppointment);
-        appointmentView.getAddButton().setOnAction(event -> handleAddAppointment());
-        appointmentView.getSaveButton().setOnAction(event -> handleSaveAppointments());
+        super(new AppointmentService(), CSV_FILE_PATH, AppointmentView::new);
     }
 
     /**
-     * Handles adding a new appointment to the system.
-     * Validates user inputs, creates a new appointment, adds it to the service and table view,
-     * and clears input fields. If the input is invalid, logs the error stack trace.
-     * <p>
-     * TODO: Implement UI feedback for invalid input.
+     * Uses the supplied input to create a new entity of type T. Each entry in input
+     * is retrieved in order from the fields of {@code EntityView}'s data table new entry field.
+     *
+     * @param input the list of input that should be values for entity's fields
+     * @return The entity created using input arguments
      */
-    private void handleAddAppointment() {
-        try {
-            // returns input in order of the fields {description, date string}
-            List<String> input = appointmentView.getDataTable().getNewEntryInput();
-            System.out.println(input);
-
-            // Parse the date and create a new appointment (throws IllegalArgumentException for invalid input
-            LocalDateTime date = LocalDateTime.parse(input.get(0));
-
-            // add appointment to appointments using input strings,
-            Appointment newAppointment = appointments.add(date, input.get(1));
-
-            // add new row to table and clear input forms.
-            appointmentView.getDataTable().clearNewEntryInput();
-            appointmentView.getDataTable().createDataRow(newAppointment);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace(); // Logs the error
-        }
-    }
-
-    /**
-     * Handles removing an appointment from the system.
-     * Deletes the appointment from the {@code AppointmentService} and removes the corresponding row in the table view.
-     *
-     * @param appointment the appointment to remove
-     * @param tableRow    the corresponding table row node to remove from view
-     *
-     * FIXME: Handle cases where the appointment might not exist in the service.
-     */
-    private void handleRemoveAppointment(Appointment appointment, Node tableRow) {
-        appointments.delete(appointment);
-        appointmentView.getDataTable().removeRow(tableRow);
-    }
-
-    /**
-     * Handles editing an appointment's field.
-     * Updates the specified field of an appointment in the {@code AppointmentService} based on user input.
-     * Logs any invalid input errors.
-     *
-     * @param appointment the appointment to modify
-     * @param field       the field to update (Valid fields are DATE and DESCRIPTION)
-     * @param inputField    the Node containing input for the new value.
-     *
-     * FIXME: Provide user feedback for invalid input.
-     */
-    private void handleEditAppointment(Appointment appointment, Appointment.Field field, Node inputField) {
-        String newValue = "";
-        if (inputField instanceof TextField) {
-            newValue = ((TextField) inputField).getText();
-        } else if (inputField instanceof DateTimePicker) {
-            newValue = ((DateTimePicker) inputField).getDateTimeValue().toString();
+    @Override
+    public Appointment createEntityFromData(List<String> input) {
+        if (input.size() < 2 || input.contains("")) {
+            throw new IllegalArgumentException("Not enough fields to add an appointment");
         }
 
-        System.out.println(inputField);
-        try {
-            appointments.updateField(appointment.getId(), field, newValue.trim());
-            inputField.setStyle("-fx-border-color: #005500");
+        LocalDateTime date = LocalDateTime.parse(input.get(0));
+        String description = input.get(1);
+        return new Appointment(date, description);
+    }
 
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getClass() + e.getMessage());
-            System.out.println("Invalid input: " + e.getMessage());
-            inputField.setStyle("-fx-border-color: #ff0000");
+    /**
+     * Attempts to extract the text input from the given {@code Node}.
+     * Returns the TextField or DateTimePicker input string if possible, else returns "";
+     * @param inputNode node containing input to be extracted (TextField or DateTimePicker only)
+     * @return The string extracted from the inputNode, or "" if nothing could be extracted.
+     */
+    @Override
+    public String getInputFrom(Node inputNode) {
+        if (inputNode instanceof DateTimePicker) {
+            return ((DateTimePicker) inputNode).getDateTimeValue().toString();
         }
-    }
-
-    /**
-     * Saves all appointments to the CSV file.
-     * Called when the user clicks the save button in the AppointmentView.
-     */
-    private void handleSaveAppointments() {
-        appointments.writeToFile(CSV_FILE_PATH);
-    }
-
-    /**
-     * Refreshes the appointment table view and returns the root node containing the Appointment UI elements.
-     * Used by the {@code NavController} to display the Appointment screen.
-     *
-     * @return the root node containing the Appointment view elements
-     */
-    public Parent getView() {
-        appointmentView.getDataTable().updateTable(appointments.getAll());
-        return appointmentView.getView();
+        return super.getInputFrom(inputNode);
     }
 }
