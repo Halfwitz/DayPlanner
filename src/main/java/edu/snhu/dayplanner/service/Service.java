@@ -41,7 +41,7 @@ public abstract class Service<T extends Entity<F>, F extends Enum<F>> {
      * Adds an object to the service storage, mapped to its id.
      * @param object object to add to service.
      */
-    protected T add(T object) {
+    public T add(T object) {
         entityMap.put(object.getId(), object);
         return object;
     }
