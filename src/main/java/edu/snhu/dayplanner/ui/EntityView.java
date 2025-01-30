@@ -48,7 +48,7 @@ public abstract class EntityView<T extends Entity<F>, F extends Enum<F>> {
         header.setStyle("-fx-font-weight: bold; -fx-font-size: 24px; -fx-font-style: italic;");
 
         // create data table with fields
-        dataTable = new TableView<>(fields, onRemove, onEdit);
+        dataTable = createDataTable(fields, onRemove, onEdit);
         tableView = dataTable.getView();
         tableView.setMaxWidth(700);
 
@@ -64,6 +64,13 @@ public abstract class EntityView<T extends Entity<F>, F extends Enum<F>> {
 
         // Add components to root
         root.getChildren().addAll(header, tableView, saveButton);
+    }
+
+    /**
+     * Used to create the underlying datatable, override to return specialized tables (AppointmentDataTable)
+     */
+    protected TableView<T,F> createDataTable(List<F> fields, BiConsumer<T, Node> onRemove, TriConsumer<T,F, Node> onEdit) {
+        return new TableView<>(fields, onRemove, onEdit);
     }
 
     /**

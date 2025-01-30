@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -23,80 +24,30 @@ import java.util.function.BiConsumer;
  * @author Michael Lorenz
  * @version 1.0, 1/25/2025
  */
-public class AppointmentView
+public class AppointmentView extends EntityView<Appointment, Appointment.Field>
 {
-    private final VBox root;
-    private final AppointmentTableView dataTable;
-    private final VBox tableView;
-    private final Button addButton;
-    private final Button saveButton;
-
-    private final BiConsumer<Appointment, Node> onRemove;
-    private final TriConsumer<Appointment, Appointment.Field, Node> onEdit;
-
     /**
      * Initializes this object to set up the layout with each element as a child of the {@code root} Vbox. Responsible
      * for creating the screen header, and empty appointment table view with elements for a row of column headers, table
      * data, and a row for adding new appointments to the table data.
-     * @param onRemove the method implementation that handles logic for when a appointment is removed from the table.
-     * @param onEdit the method implementation that handles logic for when a appointment field is edited in the table.
-     *               Should use Appointment as reference to edited field, and Appointment.Field as the field that is being
-     *               modified, and String as the new value.
      *
+     * @param onRemove the method implementation that handles logic for when a appointment is removed from the table.
+     * @param onEdit   the method implementation that handles logic for when a appointment field is edited in the table.
+     *                 Should use Appointment as reference to edited field, and Appointment.Field as the field that is being
+     *                 modified, and String as the new value.
      */
     public AppointmentView(BiConsumer<Appointment, Node> onRemove, TriConsumer<Appointment, Appointment.Field, Node> onEdit) {
-        // set event listeners
-        this.onRemove = onRemove;
-        this.onEdit = onEdit;
-
-        root = new VBox();
-        root.setAlignment(Pos.TOP_CENTER);
-        root.setStyle("-fx-background-color: #fff");
-
-
-        // create view heading
-        Label header = new Label("APPOINTMENTS");
-        header.setStyle("-fx-font-weight: bold; -fx-font-size: 24px; -fx-font-style: italic;");
-
-        // initialize components and data table with columns for each field in Appointment.Field
-        List<Appointment.Field> fields = new ArrayList<>();
-        fields.add(Appointment.Field.DATE);
-        fields.add(Appointment.Field.DESCRIPTION);
-        dataTable =  new AppointmentTableView(fields, onRemove, onEdit);
-
-        tableView = dataTable.getView();
-        tableView.setMaxWidth(700);
-
-        addButton = dataTable.getAddButton();
-        saveButton = new Button("SAVE CHANGES");
-
-        root.getChildren().addAll(header, tableView, saveButton);
-
+        super("APPOINTMENTS",
+                Arrays.asList(Appointment.Field.DATE, Appointment.Field.DESCRIPTION),
+                onRemove, onEdit);
     }
 
     /**
-     * Return the parent VBox node containing each element of the Appointments screen.
-     * @return root node displaying Appointments title, appointment data table, and new appointment fields.
+     * Called during super construction to get the view used for the data table
      */
-    public Parent getView() {
-        return root;
+    @Override
+    protected TableView<Appointment, Appointment.Field> createDataTable(List<Appointment.Field> fields, BiConsumer<Appointment, Node> onRemove, TriConsumer<Appointment, Appointment.Field, Node> onEdit) {
+        return new AppointmentTableView(fields, onRemove, onEdit);
     }
 
-    public AppointmentTableView getDataTable() {
-        return dataTable;
-    }
-
-    /**
-     * @return reference to new appointment add button element.
-     */
-    public Button getAddButton() {
-        return addButton;
-    }
-
-    /**
-     * @return reference to save appointment first name field element.
-     */
-    public Button getSaveButton() {
-        return saveButton;
-    }
 }
