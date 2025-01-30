@@ -49,27 +49,30 @@ public class AppointmentTableView extends TableView<Appointment, Appointment.Fie
     protected HBox createNewEntryRow() {
         HBox entryRow = new HBox();
 
-        TextField descriptionInput = new TextField();
-        descriptionInput.setMinWidth(80);
-        HBox.setHgrow(descriptionInput, Priority.ALWAYS);
-        descriptionInput.setPromptText(Appointment.Field.DESCRIPTION.toString());
-
+        // Create Date-Time Field
         DateTimePicker timePicker = new DateTimePicker();
         timePicker.setMinWidth(80);
         timePicker.setPromptText("YYYY-MM-DD HH:MM");
         HBox.setHgrow(timePicker, Priority.ALWAYS);
+
+        // Create Description Field
+        TextField descriptionInput = new TextField();
+        descriptionInput.setMinWidth(80);
+        descriptionInput.setPromptText(Appointment.Field.DESCRIPTION.toString());
+        HBox.setHgrow(descriptionInput, Priority.ALWAYS);
+
+        // Add time, description, and add button to row
         entryRow.getChildren().addAll(timePicker, descriptionInput, getAddButton());
         return entryRow;
-
     }
 
     /**
      * Returns the text within the new entry inputs as a List of string
      * @return List containing each entry as text from the new entry row (description, Date time (in ms)
      */
+    @Override
     public List<String> getNewEntryInput() {
         List<String> inputs = new ArrayList<>();
-
         // gets the time in MS from the time picker and adds to list
         inputs.add(((DateTimePicker)getNewEntryRow().getChildren().getFirst()).getDateTimeValue().toString());
         // adds input from the DESCRIPTION input field to list
