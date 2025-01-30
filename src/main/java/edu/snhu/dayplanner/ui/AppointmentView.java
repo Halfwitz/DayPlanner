@@ -1,14 +1,7 @@
 package edu.snhu.dayplanner.ui;
 
 import edu.snhu.dayplanner.service.appointmentservice.Appointment;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
