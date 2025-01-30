@@ -1,6 +1,7 @@
 package edu.snhu.dayplanner.ui;
 
 import edu.snhu.dayplanner.service.taskservice.Task;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -28,6 +29,8 @@ public class TaskView {
     private final VBox tableView;
     private final Button addButton;
     private final Button saveButton;
+    private final Label errorLabel;
+
 
     private final BiConsumer<Task, Node> onRemove;
     private final TriConsumer<Task, Task.Field, Node> onEdit;
@@ -55,15 +58,28 @@ public class TaskView {
         Label header = new Label("TASKS");
         header.setStyle("-fx-font-weight: bold; -fx-font-size: 24px; -fx-font-style: italic;");
         // initialize components and data table with columns for each field in Task.Field
+
+        errorLabel = new Label();
+        errorLabel.setStyle("-fx-text-fill: red;");
+        errorLabel.setVisible(false);
+        errorLabel.setWrapText(true);
+
         dataTable =  new TableView<Task, Task.Field>(Arrays.asList(Task.Field.values()), onRemove, onEdit);
         tableView = dataTable.getView();
         tableView.setMaxWidth(700);
 
         addButton = dataTable.getAddButton();
         saveButton = new Button("SAVE CHANGES");
+        VBox.setMargin(saveButton, new Insets(40));
+        setButtonStyle(saveButton, "#00AA00");
 
         root.getChildren().addAll(header, tableView, saveButton);
 
+    }
+
+    private void setButtonStyle(Button button, String color) {
+        button.setStyle("-fx-background-color: " + color + "; -fx-text-fill: white;" +
+                " -fx-font-wieght: bold; -fx-border-radius: 5px; -fx-font-size: 16px;");
     }
 
     /**
@@ -91,4 +107,6 @@ public class TaskView {
     public Button getSaveButton() {
         return saveButton;
     }
+    public Label getErrorLabel() { return errorLabel; }
+
 }

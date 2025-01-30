@@ -5,9 +5,13 @@ import edu.snhu.dayplanner.service.taskservice.TaskService;
 import edu.snhu.dayplanner.ui.TaskView;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Manages the logic for the Task section of the Day Planner Application. This handles user interactions,
@@ -22,6 +26,8 @@ public class TaskController
     private static final String CSV_FILE_PATH = "data/tasks.csv";
     private final TaskService tasks;
     private final TaskView taskView;
+    private final Set<Task> invalidFields;
+
 
     /**
      * Initializes a controller instance that sets up the initial {@code TaskService} list and initializes a new
@@ -29,11 +35,15 @@ public class TaskController
      */
     public TaskController() {
         tasks = new TaskService();
+        invalidFields = new HashSet<>();
+
         tasks.addFromFile(CSV_FILE_PATH);
 
         taskView = new TaskView(this::handleRemoveTask, this::handleEditTask);
         taskView.getAddButton().setOnAction(event -> handleAddTask());
         taskView.getSaveButton().setOnAction(event -> handleSaveTasks());
+        taskView.getSaveButton().setVisible(false);
+
     }
 
     /**
@@ -53,8 +63,11 @@ public class TaskController
             // add new row to table and clear input forms.
             taskView.getDataTable().clearNewEntryInput();
             taskView.getDataTable().createDataRow(newTask);
+            setErrorLabel(taskView.getErrorLabel(), "", false);
+            setHasChanges(true);
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
+            setErrorLabel(taskView.getErrorLabel(), e.getMessage(), true);
         }
     }
 
@@ -69,6 +82,8 @@ public class TaskController
     private void handleRemoveTask(Task task, Node tableRow) {
         tasks.delete(task); // FIXME: likely throws error if task does not exist. Unsure if this case is possible yet.
         taskView.getDataTable().removeRow(tableRow);
+        invalidFields.remove(task);
+        setHasChanges(true);
     }
 
     /**
@@ -89,12 +104,14 @@ public class TaskController
 
         try {
             tasks.updateField(task.getId(), field, newValue.trim());
+            invalidFields.remove(task);
             inputField.setStyle("-fx-border-color: #005500");
-
+            setHasChanges(true);
+            hideErrorMessage(inputField);
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getClass() + e.getMessage());
-            System.out.println("Invalid input: " + e.getMessage());
-            inputField.setStyle("-fx-border-color: #ff0000");
+            invalidFields.add(task);
+            setHasChanges(true);
+            showErrorMessage(inputField, e.getMessage());
         }
     }
 
@@ -104,6 +121,49 @@ public class TaskController
      */
     private void handleSaveTasks() {
         tasks.writeToFile(CSV_FILE_PATH);
+        taskView.getDataTable().updateTable(tasks.getAll());
+        setHasChanges(false);
+    }
+
+    private void setHasChanges(boolean hasChanges) {
+        boolean hasErrors = !invalidFields.isEmpty();
+        System.out.println(hasErrors + " " + invalidFields.size() + " " + invalidFields);
+        taskView.getSaveButton().setVisible(hasChanges && !hasErrors);
+    }
+
+    private void hideErrorMessage(Node inputField) {
+        if (inputField instanceof TextField) {
+            VBox parent = (VBox) inputField.getParent();
+            inputField.setStyle("-fx-border-color: #00BB00");
+
+            if (parent != null) {
+                Label errorLabel = (Label) parent.getChildren().getLast();
+                setErrorLabel(errorLabel, "", false);
+            }
+        }
+    }
+
+    private void showErrorMessage(Node inputField, String errorMessage) {
+        if (inputField instanceof TextField) {
+            VBox parent = (VBox) inputField.getParent();
+            inputField.setStyle("-fx-border-color: #ff0000");
+
+            if (parent != null) {
+                Label errorLabel = (Label) parent.getChildren().getLast();
+                setErrorLabel(errorLabel, errorMessage, true);
+            }
+        }
+    }
+
+    private void setErrorLabel(Label errorLabel, String errorMessage, boolean visible) {
+        if (visible) {
+            errorLabel.setText(errorMessage);
+            errorLabel.setVisible(true);
+            errorLabel.setManaged(true);
+        } else {
+            errorLabel.setVisible(false);
+            errorLabel.setManaged(false);
+        }
     }
 
     /**
