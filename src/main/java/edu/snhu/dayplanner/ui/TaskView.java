@@ -26,8 +26,8 @@ public class TaskView {
     private final VBox root;
     private final TableView<Task, Task.Field> dataTable;
     private final VBox tableView;
-    private Button addButton;
-    private Button saveButton;
+    private final Button addButton;
+    private final Button saveButton;
 
     private final BiConsumer<Task, Node> onRemove;
     private final TriConsumer<Task, Task.Field, Node> onEdit;
