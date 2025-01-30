@@ -113,7 +113,11 @@ public class AppointmentTableView extends TableView<Appointment, Appointment.Fie
                 });
         dateField.getEditor().textProperty().addListener(
                 (observable, oldValue, newValue) -> {
-                    onEdit.accept(appointment, Appointment.Field.DATE, dateField);
+                    try {
+                        LocalDateTime parsed = LocalDateTime.parse(newValue, DateTimeFormatter.ofPattern(dateField.getFormat()));
+                        dateField.setDateTimeValue(parsed);
+                    } catch (Exception ignored) {
+                    }
         });
 
         Button removeButton = new Button("X");
