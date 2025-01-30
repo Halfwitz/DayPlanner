@@ -20,21 +20,24 @@ public class NavController {
      * Sets action listeners to navigation sidebar buttons.
      */
     public NavController() {
-        // TODO: implement controllers for Appointment and Task screens.
         navView = new NavigationView();
         contactController = new ContactController();
         taskController = new TaskController();
         appointmentController = new AppointmentController();
 
         navView.getContactButton().setOnAction(event -> {
+            navView.selectButton(navView.getContactButton());
             navView.setCenterView(contactController.getView());
+
         });
 
         navView.getTaskButton().setOnAction(event -> {
+            navView.selectButton(navView.getTaskButton());
             navView.setCenterView(taskController.getView());
         });
 
         navView.getAppointmentButton().setOnAction(event -> {
+            navView.selectButton(navView.getAppointmentButton());
             navView.setCenterView(appointmentController.getView());
         });
     }

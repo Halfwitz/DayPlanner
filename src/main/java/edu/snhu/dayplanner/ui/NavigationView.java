@@ -9,6 +9,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
 import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 
 /**
  * Defines the main application user interface layout and stylized components for the Day Planner application.
@@ -20,7 +24,6 @@ public class NavigationView {
     private final Button taskNav;
     private final Button contactNav;
     private final VBox navBar;
-
 
     public NavigationView() {
         rootLayout = new BorderPane();
@@ -40,6 +43,9 @@ public class NavigationView {
         // center buttons
         navBar.setAlignment(Pos.CENTER);
 
+        // apply gradient color to navbar
+        navBar.setStyle("-fx-background-color: linear-gradient(to top, #779EDC, #FFB1C3);");
+
         // set button Styles
         setButtonStyle(appointmentNav);
         setButtonStyle(taskNav);
@@ -55,8 +61,18 @@ public class NavigationView {
     private void setButtonStyle(Button button) {
         button.setMinSize(50, 50);
         button.setPrefSize(150, 150);
+        button.setStyle("-fx-background-radius: 15px; -fx-background-color: white; -fx-border-width: 1px; -fx-border-color: black; -fx-border-radius: 15px");
         VBox.setMargin(button, new Insets(10.0d));
 
+    }
+
+    public void selectButton(Button button) {
+
+        contactNav.setStyle("-fx-background-radius: 15px; -fx-background-color: white; -fx-border-width: 1px; -fx-border-color: black; -fx-border-radius: 15px");
+        taskNav.setStyle("-fx-background-radius: 15px; -fx-background-color: white; -fx-border-width: 1px; -fx-border-color: black; -fx-border-radius: 15px");
+        appointmentNav.setStyle("-fx-background-radius: 15px; -fx-background-color: white; -fx-border-width: 1px; -fx-border-color: black; -fx-border-radius: 15px");
+
+        button.setStyle("-fx-background-radius: 15px; -fx-background-color: #FFB6C1; -fx-border-width: 3px; -fx-border-color: #AA5599; -fx-border-radius: 14px");
     }
 
     /**
