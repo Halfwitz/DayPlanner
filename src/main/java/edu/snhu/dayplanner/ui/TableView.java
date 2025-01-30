@@ -27,6 +27,7 @@ public class TableView<T extends Entity<F>, F extends Enum<F>> {
     private final VBox tableDataView;
     private final HBox newEntryRow;
     private final Button addButton;
+    private final Label addEntryErrorLabel;
 
     private final BiConsumer<T, Node> onRemove;
     private final TriConsumer<T, F, Node> onEdit;
@@ -72,6 +73,11 @@ public class TableView<T extends Entity<F>, F extends Enum<F>> {
         newEntryRow = createNewEntryRow();
         setEntryRowStyle(newEntryRow);
 
+        // add empty label below new entry row to modify if add button produces error
+        addEntryErrorLabel = new Label();
+        addEntryErrorLabel.setStyle("-fx-text-fill: red;");
+        addEntryErrorLabel.setVisible(false);
+        addEntryErrorLabel.setWrapText(true);
 
         // add tableView to a scrollable component and fit to width
         ScrollPane scrollPane = new ScrollPane(tableDataView);
@@ -80,7 +86,7 @@ public class TableView<T extends Entity<F>, F extends Enum<F>> {
         //scrollPane.setMaxHeight(400);
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
 
-        tableView.getChildren().addAll(colHeaderRow, scrollPane, newEntryRow);
+        tableView.getChildren().addAll(colHeaderRow, scrollPane, newEntryRow, addEntryErrorLabel );
         VBox.setVgrow(tableView, Priority.ALWAYS);
     }
 
@@ -229,6 +235,10 @@ public class TableView<T extends Entity<F>, F extends Enum<F>> {
      */
     protected HBox getNewEntryRow() {
         return newEntryRow;
+    }
+
+    public Label getAddEntryErrorLabel() {
+        return addEntryErrorLabel;
     }
 
     /**
