@@ -114,6 +114,7 @@ public class TableView<T extends Entity<F>, F extends Enum<F>> {
     protected HBox createNewEntryRow() {
         HBox entryRow = new HBox();
 
+        // Create a TextField for each field
         for (F field : fields) {
             TextField inputField = new TextField();
             inputField.setPromptText(field.name());
@@ -150,6 +151,8 @@ public class TableView<T extends Entity<F>, F extends Enum<F>> {
     /**
      * Creates a data row for an entity, including editable fields and a remove button.
      * Responsible for assigning actions to data row actions (remove and edit)
+     * Each child of the data row is a VBox containing both the input field, and a label with
+     * error message styling which can be used to display for input errors.
      * @param object The entity to display in the row.
      */
     public void createDataRow(T object) {
