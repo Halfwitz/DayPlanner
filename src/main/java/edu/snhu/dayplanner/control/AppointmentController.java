@@ -5,6 +5,8 @@ import edu.snhu.dayplanner.service.appointmentservice.AppointmentService;
 import edu.snhu.dayplanner.ui.AppointmentView;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.TextField;
+import tornadofx.control.DateTimePicker;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -86,16 +88,27 @@ public class AppointmentController
      *
      * @param appointment the appointment to modify
      * @param field       the field to update (Valid fields are DATE and DESCRIPTION)
-     * @param newValue    the new value for the field
+     * @param inputField    the Node containing input for the new value.
      *
      * FIXME: Provide user feedback for invalid input.
      */
-    private void handleEditAppointment(Appointment appointment, Appointment.Field field, String newValue) {
-        System.out.println(newValue);
+    private void handleEditAppointment(Appointment appointment, Appointment.Field field, Node inputField) {
+        String newValue = "";
+        if (inputField instanceof TextField) {
+            newValue = ((TextField) inputField).getText();
+        } else if (inputField instanceof DateTimePicker) {
+            newValue = ((DateTimePicker) inputField).getDateTimeValue().toString();
+        }
+
+        System.out.println(inputField);
         try {
             appointments.updateField(appointment.getId(), field, newValue.trim());
+            inputField.setStyle("-fx-border-color: #005500");
+
         } catch (IllegalArgumentException e) {
             System.out.println(e.getClass() + e.getMessage());
+            System.out.println("Invalid input: " + e.getMessage());
+            inputField.setStyle("-fx-border-color: #ff0000");
         }
     }
 

@@ -1,14 +1,13 @@
 package edu.snhu.dayplanner.ui;
 
 import edu.snhu.dayplanner.service.appointmentservice.Appointment;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import tornadofx.control.DateTimePicker;
 
 import java.time.LocalDateTime;
@@ -28,7 +27,7 @@ import java.util.function.BiConsumer;
  */
 public class AppointmentTableView extends TableView<Appointment, Appointment.Field> {
     private final List<Appointment.Field> fields;
-    private final TriConsumer<Appointment,Appointment.Field, String> onEdit;
+    private final TriConsumer<Appointment,Appointment.Field, Node> onEdit;
     private final BiConsumer<Appointment, Node> onRemove;
     private final Button addButton;
 
@@ -41,7 +40,7 @@ public class AppointmentTableView extends TableView<Appointment, Appointment.Fie
      */
     public AppointmentTableView(List<Appointment.Field> fields,
                                 BiConsumer<Appointment, Node> onRemove,
-                                TriConsumer<Appointment, Appointment.Field, String> onEdit) {
+                                TriConsumer<Appointment, Appointment.Field, Node> onEdit) {
         super(fields, onRemove, onEdit);
         this.fields = fields;
         this.onEdit = onEdit;
@@ -99,32 +98,43 @@ public class AppointmentTableView extends TableView<Appointment, Appointment.Fie
 
         // set fields and listeners
         TextField descriptionField = new TextField(appointment.getFieldValue(Appointment.Field.DESCRIPTION));
-        HBox.setHgrow(descriptionField, Priority.ALWAYS);
+        Label descErrorLabel = new Label();
+        descErrorLabel.setStyle("-fx-text-fill: red; -fx-font-size: 8px;");
+        descErrorLabel.setVisible(false);
+
+        VBox descFieldBox = new VBox(descriptionField, descErrorLabel);
+        HBox.setHgrow(descFieldBox, Priority.ALWAYS);
+        //HBox.setHgrow(descriptionField, Priority.ALWAYS);
         descriptionField.textProperty().addListener(
-                (observable, oldValue, newValue) -> onEdit.accept(appointment, Appointment.Field.DESCRIPTION, newValue));
+                (observable, oldValue, newValue) -> onEdit.accept(appointment, Appointment.Field.DESCRIPTION, descriptionField));
 
         // get appointment date and set date field with that value.
         DateTimePicker dateField = new DateTimePicker();
-        HBox.setHgrow(dateField, Priority.ALWAYS);
+        Label dateErrorLabel = new Label();
+        descErrorLabel.setStyle("-fx-text-fill: red; -fx-font-size: 8px;");
+        descErrorLabel.setVisible(false);
+
+        VBox dateFieldBox = new VBox(dateField, dateErrorLabel);
+        HBox.setHgrow(dateFieldBox, Priority.ALWAYS);
+
+        //HBox.setHgrow(dateField, Priority.ALWAYS);
         dateField.setDateTimeValue(LocalDateTime.parse(appointment.getFieldValue(Appointment.Field.DATE)));
 
         // set listener to send date time string to event handler
         dateField.dateTimeValueProperty().addListener(
                 (observable, oldValue, newValue) -> {
-                    System.out.println("Date changed: " + newValue); //TODO: remove debug
-                    onEdit.accept(appointment, Appointment.Field.DATE, dateField.getDateTimeValue().toString());
+                    onEdit.accept(appointment, Appointment.Field.DATE, dateField);
                 });
         dateField.getEditor().textProperty().addListener(
                 (observable, oldValue, newValue) -> {
-                    System.out.println("Date changed: " + newValue); //TODO: remove debug
-                    onEdit.accept(appointment, Appointment.Field.DATE, dateField.getDateTimeValue().toString());
+                    onEdit.accept(appointment, Appointment.Field.DATE, dateField);
         });
 
         Button removeButton = new Button("X");
         setButtonStyle(removeButton, "#dc3545");
         removeButton.setOnAction(e -> onRemove.accept(appointment, dataRow));
 
-        dataRow.getChildren().addAll(dateField, descriptionField, removeButton);
+        dataRow.getChildren().addAll(dateFieldBox, descFieldBox, removeButton);
         getTableDataView().getChildren().add(dataRow);
     }
 

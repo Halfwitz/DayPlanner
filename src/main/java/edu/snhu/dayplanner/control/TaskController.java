@@ -5,6 +5,7 @@ import edu.snhu.dayplanner.service.taskservice.TaskService;
 import edu.snhu.dayplanner.ui.TaskView;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.TextField;
 
 import java.util.List;
 
@@ -77,13 +78,22 @@ public class TaskController
      * input and logs an error. FIXME: Should also indicate the input issue to the User
      * @param task the task to modify
      * @param field the Task.Field to be updated
-     * @param newValue the new value to update the task field to.
+     * @param inputField the Node containing input for the new value. (Must be TextField
      */
-    private void handleEditTask(Task task, Task.Field field, String newValue) {
+    private void handleEditTask(Task task, Task.Field field, Node inputField) {
+        String newValue = "";
+        if (inputField instanceof TextField) {
+            newValue = ((TextField) inputField).getText();
+        }
+
         try {
             tasks.updateField(task.getId(), field, newValue.trim());
+            inputField.setStyle("-fx-border-color: #005500");
+
         } catch (IllegalArgumentException e) {
             System.out.println(e.getClass() + e.getMessage());
+            System.out.println("Invalid input: " + e.getMessage());
+            inputField.setStyle("-fx-border-color: #ff0000");
         }
     }
 

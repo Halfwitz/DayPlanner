@@ -1,6 +1,7 @@
 package edu.snhu.dayplanner.ui;
 
 import edu.snhu.dayplanner.service.appointmentservice.Appointment;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -8,7 +9,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -32,7 +32,7 @@ public class AppointmentView
     private final Button saveButton;
 
     private final BiConsumer<Appointment, Node> onRemove;
-    private final TriConsumer<Appointment, Appointment.Field, String> onEdit;
+    private final TriConsumer<Appointment, Appointment.Field, Node> onEdit;
 
     /**
      * Initializes this object to set up the layout with each element as a child of the {@code root} Vbox. Responsible
@@ -44,14 +44,17 @@ public class AppointmentView
      *               modified, and String as the new value.
      *
      */
-    public AppointmentView(BiConsumer<Appointment, Node> onRemove, TriConsumer<Appointment, Appointment.Field, String> onEdit) {
+    public AppointmentView(BiConsumer<Appointment, Node> onRemove, TriConsumer<Appointment, Appointment.Field, Node> onEdit) {
         // set event listeners
         this.onRemove = onRemove;
         this.onEdit = onEdit;
 
         root = new VBox();
+        root.setAlignment(Pos.TOP_CENTER);
+
         // create view heading
         Label header = new Label("APPOINTMENTS");
+        header.setStyle("-fx-font-weight: bold; -fx-font-size: 24px; -fx-font-style: italic;");
 
         // initialize components and data table with columns for each field in Appointment.Field
         List<Appointment.Field> fields = new ArrayList<>();
@@ -60,6 +63,8 @@ public class AppointmentView
         dataTable =  new AppointmentTableView(fields, onRemove, onEdit);
 
         tableView = dataTable.getView();
+        tableView.setMaxWidth(700);
+
         addButton = dataTable.getAddButton();
         saveButton = new Button("SAVE CHANGES");
 

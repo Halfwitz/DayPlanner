@@ -1,6 +1,7 @@
 package edu.snhu.dayplanner.ui;
 
 import edu.snhu.dayplanner.service.taskservice.Task;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -29,7 +30,7 @@ public class TaskView {
     private Button saveButton;
 
     private final BiConsumer<Task, Node> onRemove;
-    private final TriConsumer<Task, Task.Field, String> onEdit;
+    private final TriConsumer<Task, Task.Field, Node> onEdit;
 
     /**
      * Initializes this object to set up the layout with each element as a child of the {@code root} Vbox. Responsible
@@ -41,18 +42,22 @@ public class TaskView {
      *               modified, and String as the new value.
      *
      */
-    public TaskView(BiConsumer<Task, Node> onRemove, TriConsumer<Task, Task.Field, String> onEdit) {
+    public TaskView(BiConsumer<Task, Node> onRemove, TriConsumer<Task, Task.Field, Node> onEdit) {
         // set event listeners
         this.onRemove = onRemove;
         this.onEdit = onEdit;
 
         root = new VBox();
+        root.setAlignment(Pos.TOP_CENTER);
+
         // create view heading
         Label header = new Label("TASKS");
-
+        header.setStyle("-fx-font-weight: bold; -fx-font-size: 24px; -fx-font-style: italic;");
         // initialize components and data table with columns for each field in Task.Field
         dataTable =  new TableView<Task, Task.Field>(Arrays.asList(Task.Field.values()), onRemove, onEdit);
         tableView = dataTable.getView();
+        tableView.setMaxWidth(700);
+
         addButton = dataTable.getAddButton();
         saveButton = new Button("SAVE CHANGES");
 

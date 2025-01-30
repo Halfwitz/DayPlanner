@@ -1,6 +1,7 @@
 package edu.snhu.dayplanner.ui;
 
 import edu.snhu.dayplanner.service.contactservice.Contact;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -28,11 +29,12 @@ public class ContactView {
     private final VBox root;
     private final VBox tableView;
     private final TableView<Contact, Contact.Field> dataTable;
-    private Button addButton;
-    private Button saveButton;
+    private final Button addButton;
+    private final Button saveButton;
+    private final Label errorLabel;
 
     private final BiConsumer<Contact, Node> onRemove;
-    private final TriConsumer<Contact, Contact.Field, String> onEdit;
+    private final TriConsumer<Contact, Contact.Field, Node> onEdit;
 
     /**
      * Initializes this object to set up the layout with each element as a child of the {@code root} Vbox. Responsible
@@ -44,7 +46,7 @@ public class ContactView {
      *               modified, and String as the new value.
      *
      */
-    public ContactView(BiConsumer<Contact, Node> onRemove, TriConsumer<Contact, Contact.Field, String> onEdit) {
+    public ContactView(BiConsumer<Contact, Node> onRemove, TriConsumer<Contact, Contact.Field, Node> onEdit) {
         // set event listeners
         this.onRemove = onRemove;
         this.onEdit = onEdit;
@@ -54,17 +56,33 @@ public class ContactView {
 
         // create view heading
         Label header = new Label("CONTACTS");
+        header.setStyle("-fx-font-weight: bold; -fx-font-size: 24px; -fx-font-style: italic;");
 
         // initialize components and data table with columns for each field in Task.Field
         dataTable =  new TableView<Contact, Contact.Field>(Arrays.asList(Contact.Field.values()), onRemove, onEdit);
         tableView = dataTable.getView();
-        tableView.setMaxWidth(600);
+
+        errorLabel = new Label();
+        errorLabel.setStyle("-fx-text-fill: red;");
+        errorLabel.setVisible(false);
+        errorLabel.setWrapText(true);
+        dataTable.getView().getChildren().add(errorLabel);
+
+        tableView.setMaxWidth(700);
         addButton = dataTable.getAddButton();
         saveButton = new Button("SAVE CHANGES");
+        VBox.setMargin(saveButton, new Insets(40));
+        setButtonStyle(saveButton, "#00AA00");
+
 
 
         root.getChildren().addAll(header, tableView, saveButton);
 
+    }
+
+    private void setButtonStyle(Button button, String color) {
+        button.setStyle("-fx-background-color: " + color + "; -fx-text-fill: white;" +
+                " -fx-font-wieght: bold; -fx-border-radius: 5px; -fx-font-size: 16px;");
     }
 
     /**
@@ -92,4 +110,6 @@ public class ContactView {
     public Button getSaveButton() {
         return saveButton;
     }
+
+    public Label getErrorLabel() { return errorLabel; }
 }
