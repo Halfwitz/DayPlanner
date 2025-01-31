@@ -89,7 +89,7 @@ public abstract class Service<T extends Entity<F>, F extends Enum<F>> {
 
     /**
      * Update specified field of object found with id to new value.
-     * @param id Unique identifier of the object to delete
+     * @param id Unique identifier of the object being updated
      * @param field specified field of object being modified, see {@code updateField} implementation in T
      * @param value new value to change specified field to value to
      * @throws IllegalArgumentException if object does not exist or value is invalid
