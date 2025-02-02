@@ -4,8 +4,10 @@ import edu.snhu.dayplanner.service.Entity;
 import edu.snhu.dayplanner.service.Service;
 import edu.snhu.dayplanner.ui.EntityView;
 import edu.snhu.dayplanner.ui.EntityViewFactory;
+import edu.snhu.dayplanner.ui.SearchView;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
@@ -17,6 +19,7 @@ public abstract class EntityController<T extends Entity<F>, F extends Enum<F>,V 
     private final Service<T, F> service;
     private final String CSV_FILE_PATH;
     private final EntityView<T, F> entityView;
+    private final SearchView<F> searchView;
 
     private final Map<T, HashSet<Node>> invalidEntityInputs = new HashMap<>();
 
@@ -32,10 +35,14 @@ public abstract class EntityController<T extends Entity<F>, F extends Enum<F>,V 
         // construct a new EntityView using the factory and pass event handlers
         entityView = viewFactory.createView(this::handleRemoveEntity, this::handleEditEntity);
 
+        searchView = entityView.getSearchView();
+
         // attach component actions to implementation methods
         entityView.getAddButton().setOnAction(e -> handleAddEntity());
         entityView.getSaveButton().setOnAction(e->handleSaveEntities());
         entityView.getSaveButton().setVisible(false); // invisible by default
+
+        searchView.getSearchButton().setOnAction(e -> handleSearch());
     }
 
     /*---Overrideable/Abstract METHODS---*/
@@ -63,6 +70,23 @@ public abstract class EntityController<T extends Entity<F>, F extends Enum<F>,V 
     public abstract T createEntityFromData(List<String> input);
 
     /*---EVENT LISTENERS---*/
+    private void handleSearch() {
+        TextField  searchField = searchView.getSearchField();
+        ComboBox<F> fieldBox = searchView.getFieldBox();
+        List<T> results;
+        // get list from search parameters
+        if (searchField.getText().isEmpty()) {
+            results = service.getAll();
+        } else {
+            results = new ArrayList<>(service.entityTrie.searchAllWithPrefix(searchField.getText(), fieldBox.getValue()));
+            System.out.println(service.entityTrie);
+
+        }
+
+        entityView.getDataTable().updateTable(results);
+
+    }
+
     /**
      * Called when the data table's add button is clicked.
      * Retrieves input from the data table new entry row, creates an entity with the input, adds it as a new row, and
@@ -155,7 +179,7 @@ public abstract class EntityController<T extends Entity<F>, F extends Enum<F>,V 
      */
     private void handleSaveEntities() {
         service.writeToFile(CSV_FILE_PATH);
-        entityView.getDataTable().updateTable(service.getAll());
+        handleSearch();
         setHasChanges(false);
     }
 

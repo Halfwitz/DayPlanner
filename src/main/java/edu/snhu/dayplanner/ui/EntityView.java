@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public abstract class EntityView<T extends Entity<F>, F extends Enum<F>> {
     private final VBox root; // layout root container
     private final TableView<T, F> dataTable; // for displaying/adding/editing/removing entities
     private final VBox tableView; // the component containing the dataTable
+    private final SearchView<F> searchView;
     private final Button addButton; // from within tableView, used to add entries to dataTable
     private final Button saveButton; // for saving changes by writing to file
     private final Label addEntityErrorLabel;
@@ -43,6 +45,10 @@ public abstract class EntityView<T extends Entity<F>, F extends Enum<F>> {
         root.setAlignment(Pos.TOP_CENTER);
         root.setStyle("-fx-background-color: #fff");
 
+        // create searchbar view
+        searchView = new SearchView<>(fields);
+
+
         // create heading
         Label header = new Label(headingText);
         header.setStyle("-fx-font-weight: bold; -fx-font-size: 24px; -fx-font-style: italic;");
@@ -63,7 +69,7 @@ public abstract class EntityView<T extends Entity<F>, F extends Enum<F>> {
         VBox.setMargin(saveButton, new Insets(40));
 
         // Add components to root
-        root.getChildren().addAll(header, tableView, saveButton);
+        root.getChildren().addAll(header, searchView.getView(), tableView, saveButton);
     }
 
     /**
@@ -103,6 +109,10 @@ public abstract class EntityView<T extends Entity<F>, F extends Enum<F>> {
      * @return reference to error label for displaying errors in adding a new entry
      */
     public Label getAddEntityErrorLabel() { return addEntityErrorLabel; }
+
+    public SearchView<F> getSearchView() {
+        return searchView;
+    }
 
 
 }
