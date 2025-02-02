@@ -109,7 +109,7 @@ public class Contact extends Entity<Contact.Field> implements CsvSerializable<Co
 
     @Override
     public String toString() {
-        return firstName + ", " + lastName + ", " + phone + ", " + address;
+        return "("+firstName + " " + lastName + ": " + phone + ", " + address + ")";
     }
 
     // GETTERS
