@@ -19,7 +19,13 @@ package edu.snhu.dayplanner.service.taskservice;
 import edu.snhu.dayplanner.service.Service;
 import edu.snhu.dayplanner.service.ServiceFileUtility;
 
+import java.util.Arrays;
+
 public class TaskService extends Service<Task, Task.Field> {
+
+    public TaskService() {
+        super(Arrays.asList(Task.Field.values()));
+    }
 
     /**
      * Adds a task object mapped to its unique id in storage.

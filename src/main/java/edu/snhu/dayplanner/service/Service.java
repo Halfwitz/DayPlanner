@@ -19,6 +19,11 @@ public abstract class Service<T extends Entity<F>, F extends Enum<F>> {
      * (Use entity extensions (Task, Contact, Appointment))
      */
     private final Map<String, T> entityMap = new HashMap<>();
+    public final CompactTrie<T, F> entityTrie;
+
+    protected Service(List<F> fields) {
+        entityTrie = new CompactTrie<>(fields);
+    }
 
     /**
      * Return an entity from the stored map
@@ -43,6 +48,7 @@ public abstract class Service<T extends Entity<F>, F extends Enum<F>> {
      */
     public T add(T object) {
         entityMap.put(object.getId(), object);
+        entityTrie.insert(object);
         return object;
     }
 
@@ -75,6 +81,7 @@ public abstract class Service<T extends Entity<F>, F extends Enum<F>> {
      * @throws IllegalArgumentException if object does not exist
      */
     public T delete(T object) {
+        entityTrie.delete(object);
         return entityMap.remove(object.getId());
     }
     /**
@@ -96,7 +103,9 @@ public abstract class Service<T extends Entity<F>, F extends Enum<F>> {
      */
     public void updateField(String id, F field, String value) {
         T entity = getById(id);
+        String oldValue = entity.getFieldValue(field);
         entity.updateField(field, value);
+        entityTrie.update(entity, field, oldValue);
     }
 
 }

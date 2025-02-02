@@ -19,8 +19,15 @@ package edu.snhu.dayplanner.service.contactservice;
 import edu.snhu.dayplanner.service.Service;
 import edu.snhu.dayplanner.service.ServiceFileUtility;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class ContactService extends Service<Contact, Contact.Field> {
-    
+
+    public ContactService() {
+        super(Arrays.asList(Contact.Field.values()));
+    }
+
     /**
      * Adds a contact object mapped to its unique id storage.
      * @param firstName Contact's first name

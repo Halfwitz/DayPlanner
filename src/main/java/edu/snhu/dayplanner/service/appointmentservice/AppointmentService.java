@@ -18,9 +18,14 @@ import edu.snhu.dayplanner.service.Service;
 import edu.snhu.dayplanner.service.ServiceFileUtility;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 public class AppointmentService extends Service<Appointment, Appointment.Field>
 {
+    public AppointmentService() {
+        super(Arrays.asList(Appointment.Field.DATE, Appointment.Field.DESCRIPTION));
+    }
+
     /**
      * Adds an appointment object mapped to its unique id in storage.
      * @param date - Scheduled date of the appointment (Must not be non-null, in the past)
